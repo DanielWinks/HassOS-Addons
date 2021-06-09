@@ -14,8 +14,8 @@ RUN curl -Lso /tmp/rtl_sdr.tar.gz \
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib"
 
 RUN mkdir -p /build/rtl_433 /build/rtl_sdr && \
-    tar -zxvf /tmp/rtl_433.tar.gz -C /build/rtl_433 --strip-components=1 && \
-    tar -zxvf /tmp/rtl_sdr.tar.gz -C /build/rtl_sdr --strip-components=1
+    tar -zxf /tmp/rtl_433.tar.gz -C /build/rtl_433 --strip-components=1 && \
+    tar -zxf /tmp/rtl_sdr.tar.gz -C /build/rtl_sdr --strip-components=1
 
 RUN mkdir /build/rtl_sdr/out && cd /build/rtl_sdr/out && \
     cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON && \
