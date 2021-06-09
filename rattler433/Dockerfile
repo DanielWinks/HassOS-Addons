@@ -4,11 +4,11 @@ ARG RTL_SDR_VER
 
 FROM alpine:3.13 as builder
 
-RUN apk add --no-cache --update cmake build-base libusb-dev bash  curl
+RUN apk add --no-cache --update cmake build-base libusb-dev bash curl
 
-RUN curl -sSLo /tmp/rtl_433.tar.gz \
+RUN curl -SLo /tmp/rtl_433.tar.gz \
     "https://github.com/merbanan/rtl_433/archive/${RTL_433_VER}.tar.gz"
-RUN curl -sSLo /tmp/rtl_sdr.tar.gz \
+RUN curl -SLo /tmp/rtl_sdr.tar.gz \
     "https://github.com/osmocom/rtl-sdr/archive/${RTL_SDR_VER}.tar.gz"
 
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib"
