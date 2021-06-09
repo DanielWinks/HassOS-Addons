@@ -1,0 +1,47 @@
+{
+  "name": "Rattler 433",
+  "version": "1.0.25",
+  "slug": "rtl_433_hassio",
+  "description": "RTL_433 for Home Assistant",
+  "image": "dwinks/rattler433",
+  "arch": [
+    "armhf",
+    "armv7",
+    "aarch64",
+    "amd64",
+    "i386"
+  ],
+  "startup": "application",
+  "boot": "auto",
+  "services": [
+    "mqtt:want"
+  ],
+  "map": [
+    "share"
+  ],
+  "usb": true,
+  "options": {
+    "mqtt_prefix": "rtl_433",
+    "retain": true,
+    "customize": {
+      "active": false,
+      "folder": "rattler"
+    },
+    "mqtt_host": "",
+    "mqtt_port": 1883,
+    "mqtt_user": "sdr",
+    "mqtt_pass": ""
+  },
+  "schema": {
+    "mqtt_prefix": "str",
+    "retain": "bool",
+    "customize": {
+      "active": "bool",
+      "folder": "str?"
+    },
+    "mqtt_host": "str?",
+    "mqtt_port": "int?",
+    "mqtt_user": "str?",
+    "mqtt_pass": "str?"
+  }
+}
