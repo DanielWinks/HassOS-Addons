@@ -120,7 +120,7 @@ jobs:
         with:
           args: |
             ${{ env.BUILD_ARGS }} \
-            --image "${{ matrix.addon }}:${{ matrix.arch }}"
+            --image "${{ matrix.addon }}:${{ matrix.arch }}" \
             --${{ matrix.arch }} \
             --target /data/${{ matrix.addon }} \
             --addon
