@@ -4,9 +4,8 @@ ARG RTL_SDR_VER
 
 FROM scratch as dl_cacher
 
-RUN curl -o /rtl_433.tar.gz -sSL https://github.com/merbanan/rtl_433/archive/${RTL_433_VER}.tar.gz
-RUN curl -o /rtl_sdr.tar.gz -sSL https://github.com/osmocom/rtl-sdr/archive/${RTL_SDR_VER}.tar.gz
-
+RUN curl -sSLo /rtl_433.tar.gz "https://github.com/merbanan/rtl_433/archive/${RTL_433_VER}.tar.gz"
+RUN curl -sSLo /rtl_sdr.tar.gz "https://github.com/osmocom/rtl-sdr/archive/${RTL_SDR_VER}.tar.gz"
 FROM alpine:3.13 as builder
 
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib"
