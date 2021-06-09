@@ -1,9 +1,9 @@
 ARG BUILD_FROM
-ARG RTL_433_VER
-ARG RTL_SDR_VER
 
 FROM scratch as dl_cacher
 
+ARG RTL_433_VER
+ARG RTL_SDR_VER
 RUN curl -sSLo /rtl_433.tar.gz "https://github.com/merbanan/rtl_433/archive/${RTL_433_VER}.tar.gz"
 RUN curl -sSLo /rtl_sdr.tar.gz "https://github.com/osmocom/rtl-sdr/archive/${RTL_SDR_VER}.tar.gz"
 FROM alpine:3.13 as builder
