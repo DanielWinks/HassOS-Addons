@@ -3,7 +3,7 @@
   "version": "1.0.25",
   "slug": "rtl_433_hassio",
   "description": "RTL_433 for Home Assistant",
-  "image": "dwinks/rattler433",
+  "image": "dwinks/image-{arch}-rattler433",
   "arch": [
     "armhf",
     "armv7",
