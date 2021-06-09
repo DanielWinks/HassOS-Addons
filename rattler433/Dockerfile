@@ -4,8 +4,8 @@ ARG RTL_SDR_VER
 
 FROM scratch as dl_cacher
 
-ADD https://github.com/merbanan/rtl_433/archive/${RTL_433_VER}.tar.gz /rtl_433.tar.gz
-ADD https://github.com/osmocom/rtl-sdr/archive/${RTL_SDR_VER}.tar.gz /rtl_sdr.tar.gz
+RUN curl -o /rtl_433.tar.gz -sSL https://github.com/merbanan/rtl_433/archive/${RTL_433_VER}.tar.gz
+RUN curl -o /rtl_sdr.tar.gz -sSL https://github.com/osmocom/rtl-sdr/archive/${RTL_SDR_VER}.tar.gz
 
 FROM alpine:3.13 as builder
 
