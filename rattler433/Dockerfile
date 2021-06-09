@@ -1,18 +1,17 @@
 ARG BUILD_FROM
-
-FROM scratch as dl_cacher
-
 ARG RTL_433_VER
 ARG RTL_SDR_VER
-RUN curl -sSLo /rtl_433.tar.gz "https://github.com/merbanan/rtl_433/archive/${RTL_433_VER}.tar.gz"
-RUN curl -sSLo /rtl_sdr.tar.gz "https://github.com/osmocom/rtl-sdr/archive/${RTL_SDR_VER}.tar.gz"
+
 FROM alpine:3.13 as builder
+
+RUN curl -sSLo /tmp/rtl_433.tar.gz \
+    "https://github.com/merbanan/rtl_433/archive/${RTL_433_VER}.tar.gz"
+RUN curl -sSLo /tmp/rtl_sdr.tar.gz \
+    "https://github.com/osmocom/rtl-sdr/archive/${RTL_SDR_VER}.tar.gz"
 
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib"
 
 RUN apk add --no-cache --update cmake build-base libusb-dev bash
-
-COPY --from=dl_cacher / /tmp
 
 RUN mkdir -p /build/rtl_433 /build/rtl_sdr && \
     tar -zxvf /tmp/rtl_433.tar.gz -C /build/rtl_433 --strip-components=1 && \
