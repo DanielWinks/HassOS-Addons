@@ -1,0 +1,47 @@
+{
+  "name": "Powerstat Docker",
+  "version": "1.0.0",
+  "slug": "pwrstat_hassio",
+  "description": "Powerstat Docker for Home Assistant",
+  "image": "dwinks/pwrstat-{arch}",
+  "arch": [
+    "amd64",
+    "i386"
+  ],
+  "startup": "application",
+  "boot": "auto",
+  "services": [
+    "mqtt:want"
+  ],
+  "usb": true,
+  "options": {
+    "log_level": "WARNING",
+    "mqtt_prefix": "pwrstat",
+    "mqtt_client_id": "pwrstat",
+    "mqtt_retain": true,
+    "mqtt_qos": 2,
+    "mqtt_host": "",
+    "mqtt_port": 1883,
+    "mqtt_user": "pwrstat",
+    "mqtt_pass": "",
+    "mqtt_topic": "/power/ups",
+    "mqtt_refresh": 30,
+    "rest_port": 5003,
+    "prometheus_port": 9222
+  },
+  "schema": {
+    "log_level": "list(DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL)",
+    "mqtt_prefix": "str",
+    "mqtt_client_id": "str",
+    "mqtt_retain": "bool",
+    "mqtt_qos": "list(0|1|2)",
+    "mqtt_host": "str?",
+    "mqtt_port": "int?",
+    "mqtt_user": "str?",
+    "mqtt_pass": "str?",
+    "mqtt_topic": "str",
+    "mqtt_refresh": "int?",
+    "rest_port": "int?",
+    "prometheus_port": "int?"
+  }
+}
