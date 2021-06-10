@@ -12,6 +12,7 @@ declare prefix
 declare topic
 declare log_level
 
+cd /pwrstat
 
 if ! bashio::services.available "mqtt"; then
     bashio::log.info "No internal MQTT service found"
@@ -85,5 +86,5 @@ output=$(bashio::var.json \
         bind_address "0.0.0.0" \
         labels "^$(bashio::var.json rack: "0")")")
 
-echo ${output} >/pwrstat/pwrstat.json
-/pwrstat/pwrstat_api.py
+echo ${output} > pwrstat.json
+pwrstat_api.py
