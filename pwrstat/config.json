@@ -9,6 +9,7 @@
     "i386"
   ],
   "startup": "application",
+  "privileged": ["NET_ADMIN"],
   "boot": "auto",
   "services": [
     "mqtt:want"
@@ -25,9 +26,7 @@
     "mqtt_user": "pwrstat",
     "mqtt_pass": "",
     "mqtt_topic": "/power/ups",
-    "mqtt_refresh": 30,
-    "rest_port": 5003,
-    "prometheus_port": 9222
+    "mqtt_refresh": 30
   },
   "schema": {
     "log_level": "list(DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL)",
@@ -40,8 +39,15 @@
     "mqtt_user": "str?",
     "mqtt_pass": "str?",
     "mqtt_topic": "str",
-    "mqtt_refresh": "int?",
-    "rest_port": "int?",
-    "prometheus_port": "int?"
-  }
+    "mqtt_refresh": "int?"
+  },
+  "ports": {
+    "5003/tcp": null,
+    "9222/tcp": null
+  },
+  "ports_description": {
+    "5003/tcp": "REST Client Port",
+    "9222/tcp": "Prometheus Port"
+  },
+  "watchdog": "http://[HOST]:[PORT:5003]/pwrstat"
 }
