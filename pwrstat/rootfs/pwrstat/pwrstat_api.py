@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 """Get output from pwrstat program and send results to REST or MQTT clients."""
 from threading import Thread
 import logging
