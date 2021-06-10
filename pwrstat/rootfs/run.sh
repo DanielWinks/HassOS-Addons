@@ -65,28 +65,25 @@ log_level=$(bashio::config 'log_level')
 bashio::log.level ${log_level}
 
 # Generate Config File
-bashio::var.json \
-pwrstat_api "^$(bashio::var.json log_level "${log_level}")" \
-mqtt "^$(bashio::var.json \
-    broker "${host}" \
-    port "${port}" \
-    client_id "${client_id}" \
-    topic "${prefix}/${topic}" \
-    refresh "${refresh}" \
-    qos "${qos}" \
-    retained "${retain}" \
-    username "${username}" \
-    password "${password}")" \
-rest "^$(bashio::var.json \
-    port "9222" \
-    bind_address "0.0.0.0")" \
-prometheus "^$(bashio::var.json \
-    port "5003" \
-    bind_address "0.0.0.0" \
-    labels "^$(bashio::var.json rack: "0")")" \
-
-> "${output}"
-
+output=$(bashio::var.json \
+    pwrstat_api "^$(bashio::var.json log_level "${log_level}")" \
+    mqtt "^$(bashio::var.json \
+        broker "${host}" \
+        port "${port}" \
+        client_id "${client_id}" \
+        topic "${prefix}/${topic}" \
+        refresh "${refresh}" \
+        qos "${qos}" \
+        retained "${retain}" \
+        username "${username}" \
+        password "${password}")" \
+    rest "^$(bashio::var.json \
+        port "9222" \
+        bind_address "0.0.0.0")" \
+    prometheus "^$(bashio::var.json \
+        port "5003" \
+        bind_address "0.0.0.0" \
+        labels "^$(bashio::var.json rack: "0")")")
 
 echo ${output} >/pwrstat.json
 bashio::log.error ${output}
