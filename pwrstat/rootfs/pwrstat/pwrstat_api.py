@@ -3,10 +3,13 @@
 from threading import Thread
 import logging
 from subprocess import DEVNULL, Popen, PIPE
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from ruamel.yaml import YAML as yaml
 from ruamel.yaml import YAMLError
+
+import json
+from json import JSONDecodeError
 
 import pwrstat_prometheus
 import pwrstat_mqtt
@@ -16,37 +19,43 @@ from pwrstat_schemas import PWRSTAT_API_SCHEMA, MQTT_SCHEMA, REST_SCHEMA, PROMET
 _LOGGER = logging.getLogger("PwrstatApi")
 YAML = yaml(typ="safe")
 
-
 class PwrstatApi:
     """Get output from pwrstat program and send results to REST or MQTT clients."""
 
-    def __init__(self) -> None:
+    def __init__(self, config_type: Literal["YAML", "JSON"]) -> None:
         """Initialize Pwrstat class."""
         _start_pwrstatd_watchdog()
-        _process_config()
+        _process_config(config_type)
 
 
-def _process_config() -> None:
-    """Process YAML config file. Starts servers if configured."""
-    with open("pwrstat.yaml") as file:
-        try:
-            yaml_config: Dict[str, Any] = YAML.load(file)
-        except YAMLError as ex:
-            _LOGGER.log(level=logging.ERROR, msg=ex)
+def _process_config(config_type: Literal["YAML", "JSON"]) -> None:
+    """Process YAML or JSON config file. Starts servers if configured."""
+    if "YAML" in config_type:
+        with open("pwrstat.yaml") as file:
+            try:
+                config: Dict[str, Any] = YAML.load(file)
+            except YAMLError as ex:
+                _LOGGER.log(level=logging.ERROR, msg=ex)
+    else:
+        with open("pwrstat.json") as file:
+            try:
+                config: Dict[str, Any] = json.load(file)
+            except JSONDecodeError as ex:
+                _LOGGER.log(level=logging.ERROR, msg=ex)
 
-    pwrstat_api_yaml: Dict[str, Any] = yaml_config.get("pwrstat_api") or {}
+    pwrstat_api_yaml: Dict[str, Any] = config.get("pwrstat_api") or {}
     pwrstat_api_config: Dict[str, Any] = PWRSTAT_API_SCHEMA(pwrstat_api_yaml)
 
     _LOGGER.setLevel(pwrstat_api_config["log_level"])
 
-    if "mqtt" in yaml_config:
-        _start_mqtt(yaml_config["mqtt"])
+    if "mqtt" in config:
+        _start_mqtt(config["mqtt"])
 
-    if "prometheus" in yaml_config:
-        _start_prometheus(yaml_config["prometheus"])
+    if "prometheus" in config:
+        _start_prometheus(config["prometheus"])
 
-    if "rest" in yaml_config:
-        _start_rest(yaml_config["rest"])
+    if "rest" in config:
+        _start_rest(config["rest"])
 
 
 def get_status() -> Optional[Dict[str, str]]:
@@ -132,4 +141,4 @@ def _start_rest(rest_config_yaml: Dict[str, Any]) -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format="%(message)s")
     _LOGGER.info("Starting Pwrstat_API...")
-    PwrstatApi()
+    PwrstatApi("JSON")
