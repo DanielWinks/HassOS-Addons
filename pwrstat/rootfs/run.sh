@@ -87,5 +87,6 @@ output=$(bashio::var.json \
 cd /pwrstat || { echo "[Error] Failed to cd into /pwrstat"; exit 1; }
 
 echo ${output} > pwrstat.json
+cat pwrstat.json
 bashio::log.info "Running pwrstat..."
 exec /pwrstat/pwrstat_api.py

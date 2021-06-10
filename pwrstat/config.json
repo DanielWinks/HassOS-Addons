@@ -1,6 +1,6 @@
 {
   "name": "Powerstat Docker",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "slug": "pwrstat_hassio",
   "description": "Powerstat Docker for Home Assistant",
   "image": "dwinks/pwrstat-{arch}",
