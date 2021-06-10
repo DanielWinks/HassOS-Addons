@@ -83,7 +83,7 @@ rest "^$(bashio::var.json \
 prometheus "^$(bashio::var.json \
     port "5003" \
     bind_address "0.0.0.0" \
-    labels "^$(bashio::var.json rack: "0")" \
+    labels "^$(bashio::var.json rack: "0")")" \
 
 > "${output}"
 
