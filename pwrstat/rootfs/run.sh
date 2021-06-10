@@ -11,8 +11,6 @@ declare client_id
 declare prefix
 declare topic
 declare log_level
-declare rest_port
-declare prometheus_port
 
 
 if ! bashio::services.available "mqtt"; then
@@ -56,18 +54,6 @@ else
     refresh="30"
 fi
 
-if bashio::config.has_value 'rest_port'; then
-    rest_port=$(bashio::config 'rest_port')
-else
-    rest_port="5003"
-fi
-
-if bashio::config.has_value 'prometheus_port'; then
-    prometheus_port=$(bashio::config 'prometheus_port')
-else
-    prometheus_port="9222"
-fi
-
 client_id=$(bashio::config 'mqtt_prefix')
 prefix=$(bashio::config 'mqtt_prefix')
 topic=$(bashio::config 'mqtt_topic')
@@ -91,15 +77,15 @@ mqtt:
   username: "${username}"
   password: "${password}"
 rest:
-  port: ${rest_port}
+  port: 5003
   bind_address: "0.0.0.0"
 prometheus:
-  port: ${prometheus_port}
+  port: 9222
   bind_address: "0.0.0.0"
   labels:
     rack: "0"
 EOM
 
 echo ${output} >/pwrstat.yaml
-
+bashio::log.info ${output}
 /pwrstat_api.py
