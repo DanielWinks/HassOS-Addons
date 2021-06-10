@@ -85,6 +85,5 @@ output=$(bashio::var.json \
         bind_address "0.0.0.0" \
         labels "^$(bashio::var.json rack: "0")")")
 
-echo ${output} >/pwrstat.json
-bashio::log.error ${output}
-/pwrstat_api.py
+echo ${output} >/pwrstat/pwrstat.json
+/pwrstat/pwrstat_api.py
