@@ -1,0 +1,9 @@
+{
+  "build_from": {
+    "amd64": "ghcr.io/home-assistant/amd64-base-debian:buster",
+    "i386": "ghcr.io/home-assistant/i386-base-debian:buster"
+  },
+  "args": {
+    "VER": "1.3.3"
+  }
+}
