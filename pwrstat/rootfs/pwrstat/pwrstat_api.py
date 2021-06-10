@@ -37,7 +37,7 @@ def _process_config(config_type: Literal["YAML", "JSON"]) -> None:
             except YAMLError as ex:
                 _LOGGER.log(level=logging.ERROR, msg=ex)
     else:
-        with open("pwrstat.json") as file:
+        with open("/pwrstat/pwrstat.json") as file:
             try:
                 config: Dict[str, Any] = json.load(file)
             except JSONDecodeError as ex:
