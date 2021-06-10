@@ -1,29 +1,25 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-ARG ARCH
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ARG BUILD_ARCH
 ARG VERSION
-COPY rootfs/*.deb /tmp/
-COPY rootfs/pwrstat /
+COPY rootfs /
 
-RUN apt-get update && apt-get dist-upgrade -y && \
-    apt-get install -y procps curl && \
-    chmod +x /init.sh && chmod +x /pwrstat_api.py && \
-    pip install --trusted-host pypi.python.org -r requirements.txt && \
-    apt-get -y --purge autoremove && apt-get clean && \
-    rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* && \
-    if [[ "amd64" = *"$BUILD_ARCH"* ]]; \
-        then \
-            apt-get install -y /PPL-1.3.3-64bit.deb && \
-            apt-get -y --purge autoremove && apt-get clean && \
-            rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* \
+RUN set -x && apt-get update && apt-get dist-upgrade -y && \
+    apt-get install -y procps curl python3 python3-pip && \
+    pip3 install --trusted-host pypi.python.org -r /pwrstat/requirements.txt && \
+    if [[ "${BUILD_ARCH}" = "amd64" ]]; \
+        then apt-get install -y /PPL-1.3.3-64bit.deb; \
     fi && \
-    if [[ "i386" = *"$BUILD_ARCH"* ]]; \
-        then \
-            apt-get install -y /PPL-1.3.3-32bit.deb && \
-            apt-get -y --purge autoremove && apt-get clean && \
-            rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* \
-    fi
+    if [[ "${BUILD_ARCH}" = "i386" ]]; \
+        then apt-get install -y /PPL-1.3.3-32bit.deb; \
+    fi && \
+    apt-get -y --purge autoremove && apt-get clean && \
+    rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* \
+        /PPL-1.3.3-64bit.deb /PPL-1.3.3-32bit.deb
 
-RUN chmod +x /run.sh
+
+RUN chmod +x /run.sh /pwrstat/pwrstat_api.py
 CMD [ "/run.sh" ]
