@@ -62,7 +62,7 @@ topic=$(bashio::config 'mqtt_topic')
 qos=$(bashio::config 'mqtt_qos')
 
 log_level=$(bashio::config 'log_level')
-bashio::log.level(${log_level})
+bashio::log.level ${log_level}
 
 read -r -d '' output << EOM
 pwrstat_api:
