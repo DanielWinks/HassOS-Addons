@@ -9,8 +9,6 @@ on:
   pull_request:
     branches:
       - main
-  schedule:
-    - cron: "0 0 * * *"
 
 env:
   MONITORED_FILES: "apparmor.txt build.json config.json Dockerfile data rootfs"
