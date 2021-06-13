@@ -11,9 +11,10 @@ from ruamel.yaml import YAMLError
 import json
 from json import JSONDecodeError
 
-import pwrstat_prometheus
-import pwrstat_mqtt
-import pwrstat_rest
+pwrstat_prometheus
+pwrstat_mqtt
+pwrstat_rest
+pwrstat_args
 from pwrstat_schemas import PWRSTAT_API_SCHEMA, MQTT_SCHEMA, REST_SCHEMA, PROMETHEUS_SCHEMA
 
 _LOGGER = logging.getLogger("PwrstatApi")
@@ -24,6 +25,8 @@ class PwrstatApi:
 
     def __init__(self, config_type: Literal["YAML", "JSON"]) -> None:
         """Initialize Pwrstat class."""
+        import pwrstat_args
+
         _start_pwrstatd_watchdog()
         _process_config(config_type)
 
