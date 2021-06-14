@@ -11,40 +11,51 @@ from ruamel.yaml import YAMLError
 import json
 from json import JSONDecodeError
 
-pwrstat_prometheus
-pwrstat_mqtt
-pwrstat_rest
-pwrstat_args
-from pwrstat_schemas import PWRSTAT_API_SCHEMA, MQTT_SCHEMA, REST_SCHEMA, PROMETHEUS_SCHEMA
+import pwrstat_prometheus
+import pwrstat_mqtt
+import pwrstat_rest
+from pwrstat_schemas import (
+    PWRSTAT_API_SCHEMA,
+    MQTT_SCHEMA,
+    REST_SCHEMA,
+    PROMETHEUS_SCHEMA,
+)
 
 _LOGGER = logging.getLogger("PwrstatApi")
 YAML = yaml(typ="safe")
+
 
 class PwrstatApi:
     """Get output from pwrstat program and send results to REST or MQTT clients."""
 
     def __init__(self, config_type: Literal["YAML", "JSON"]) -> None:
         """Initialize Pwrstat class."""
-        import pwrstat_args
-
-        _start_pwrstatd_watchdog()
+        # _start_pwrstatd_watchdog()
         _process_config(config_type)
 
 
 def _process_config(config_type: Literal["YAML", "JSON"]) -> None:
     """Process YAML or JSON config file. Starts servers if configured."""
-    if "YAML" in config_type:
-        with open("pwrstat.yaml") as file:
-            try:
-                config: Dict[str, Any] = YAML.load(file)
-            except YAMLError as ex:
-                _LOGGER.log(level=logging.ERROR, msg=ex)
+    if config_type is not None:
+        if "YAML" in config_type:
+            with open("pwrstat.yaml") as file:
+                try:
+                    config: Dict[str, Any] = YAML.load(file)
+                except YAMLError as ex:
+                    _LOGGER.log(level=logging.ERROR, msg=ex)
+        elif "JSON" in config_type:
+            with open("/pwrstat/pwrstat.json") as file:
+                try:
+                    config: Dict[str, Any] = json.load(file)
+                except JSONDecodeError as ex:
+                    _LOGGER.log(level=logging.ERROR, msg=ex)
     else:
-        with open("/pwrstat/pwrstat.json") as file:
-            try:
-                config: Dict[str, Any] = json.load(file)
-            except JSONDecodeError as ex:
-                _LOGGER.log(level=logging.ERROR, msg=ex)
+        import pwrstat_args
+        print(isinstance(pwrstat_args.args, Dict))
+        config = pwrstat_args.args
+
+        mqtt_config: Dict[str:str] = {}
+        mqtt_config["broker"] = pwrstat_args.args.mqtt_broker
 
     pwrstat_api_yaml: Dict[str, Any] = config.get("pwrstat_api") or {}
     pwrstat_api_config: Dict[str, Any] = PWRSTAT_API_SCHEMA(pwrstat_api_yaml)
@@ -64,9 +75,11 @@ def _process_config(config_type: Literal["YAML", "JSON"]) -> None:
 def get_status() -> Optional[Dict[str, str]]:
     """Return status from pwrstat program."""
     _LOGGER.info("Getting status from pwrstatd...")
-    status: str = Popen(
-        ["pwrstat", "-status"], stdout=PIPE, stderr=DEVNULL
-    ).communicate()[0].decode("utf-8")
+    status: str = (
+        Popen(["pwrstat", "-status"], stdout=PIPE, stderr=DEVNULL)
+        .communicate()[0]
+        .decode("utf-8")
+    )
     status_dict = _get_status_dict(status)
     if len(status_dict) > 1:
         return status_dict
@@ -128,7 +141,9 @@ def _start_prometheus(prometheus_config_yaml: Dict[str, Any]) -> None:
     registry.register(pwrstat_prometheus.CustomCollector(prometheus_config["labels"]))
 
     app = make_wsgi_app(registry)
-    httpd = make_server(prometheus_config["bind_address"], prometheus_config["port"], app)
+    httpd = make_server(
+        prometheus_config["bind_address"], prometheus_config["port"], app
+    )
     Thread(target=httpd.serve_forever).start()
     _LOGGER.info("After Prometheus")
 
@@ -144,4 +159,4 @@ def _start_rest(rest_config_yaml: Dict[str, Any]) -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format="%(message)s")
     _LOGGER.info("Starting Pwrstat_API...")
-    PwrstatApi("JSON")
+    PwrstatApi(None)

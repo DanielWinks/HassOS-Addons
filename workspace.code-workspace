@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "pwrstat\\rootfs\\pwrstat"
+		}
+	],
+	"settings": {
+		"python.pythonPath": "C:\\Program Files\\Python310\\python.exe",
+		"python.analysis.useImportHeuristic": true,
+		"python.languageServer": "Pylance"
+	}
+}
