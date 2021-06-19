@@ -51,11 +51,7 @@ def _process_config(config_type: Literal["YAML", "JSON"]) -> None:
                     _LOGGER.log(level=logging.ERROR, msg=ex)
     else:
         import pwrstat_args
-        print(isinstance(pwrstat_args.args, Dict))
-        config = pwrstat_args.args
-
-        mqtt_config: Dict[str:str] = {}
-        mqtt_config["broker"] = pwrstat_args.args.mqtt_broker
+        config = pwrstat_args.config
 
     pwrstat_api_yaml: Dict[str, Any] = config.get("pwrstat_api") or {}
     pwrstat_api_config: Dict[str, Any] = PWRSTAT_API_SCHEMA(pwrstat_api_yaml)
