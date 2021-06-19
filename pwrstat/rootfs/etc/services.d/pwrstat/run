@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Runs pwrstat
+# ==============================================================================
+
+
+bashio::log.info "Starting Pwrstat API..."
+
+exec /pwrstat/pwrstat_api.py
