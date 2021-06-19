@@ -11,6 +11,7 @@ on:
       - main
 
 env:
+  BUILD_ARGS: "--test"
   MONITORED_FILES: "apparmor.txt build.json config.json Dockerfile data rootfs"
 
 jobs:
@@ -114,7 +115,7 @@ jobs:
 
       - name: Build ${{ matrix.addon }} add-on
         if: steps.check.outputs.build_arch == 'true'
-        uses: home-assistant/builder@2021.05.0
+        uses: home-assistant/builder@2021.06.2
         with:
           args: |
             ${{ env.BUILD_ARGS }} \
