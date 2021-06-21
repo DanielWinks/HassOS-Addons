@@ -1,6 +1,5 @@
 flask
-
-prometheus_client
 paho-mqtt
+prometheus_client
 ruamel.yaml
 voluptuous
