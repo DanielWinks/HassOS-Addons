@@ -1,6 +1,6 @@
 {
   "name": "Rattler 433",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "slug": "rtl_433_hassio",
   "description": "RTL_433 for Home Assistant",
   "image": "dwinks/rattler433",
