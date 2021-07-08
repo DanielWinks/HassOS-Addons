@@ -1,0 +1,12 @@
+{
+  "build_from": {
+    "aarch64": "ghcr.io/home-assistant/aarch64-base-debian:stretch",
+    "amd64": "ghcr.io/home-assistant/amd64-base-debian:stretch",
+    "armhf": "ghcr.io/home-assistant/armhf-base-debian:stretch",
+    "armv7": "ghcr.io/home-assistant/armv7-base-debian:stretch",
+    "i386": "ghcr.io/home-assistant/i386-base-debian:stretch"
+  },
+  "args": {
+    "BOOST_VER": "1.76.0"
+  }
+}
