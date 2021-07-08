@@ -1,9 +1,9 @@
 {
   "name": "Rattler 433",
-  "version": "1.0.37",
+  "version": "1.0.38",
   "slug": "rtl_433_hassio",
   "description": "RTL_433 for Home Assistant",
-  "image": "dwinks/rattler433",
+  "image": "dwinks/rattler433-{arch}",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
   "boot": "auto",
