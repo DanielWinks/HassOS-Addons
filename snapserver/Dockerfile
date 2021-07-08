@@ -19,7 +19,7 @@ RUN apt-get update && \
     wget
 
 WORKDIR /
-RUN wget -qOboost.tar.bz2 https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VER}/source/boost_${BOOST_VER}.tar.bz2
+RUN wget -qOboost.tar.bz2 "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VER}/source/boost_${BOOST_VER}.tar.bz2"
 RUN mkdir /boost
 RUN tar --strip-components=1 -xf boost.tar.bz2 -C /boost
 RUN git clone https://github.com/badaix/snapcast.git
