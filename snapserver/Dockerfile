@@ -15,7 +15,8 @@ RUN apt-get update && \
     alsa-utils \
     libavahi-client-dev \
     avahi-daemon \
-    libexpat1-dev
+    libexpat1-dev \
+    wget
 
 WORKDIR /
 RUN wget -qOboost.tar.bz2 https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VER}/source/boost_${BOOST_VER}.tar.bz2
