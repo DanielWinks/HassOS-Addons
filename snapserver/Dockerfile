@@ -15,7 +15,19 @@ RUN apt-get update && \
     libavahi-client-dev \
     avahi-daemon \
     libexpat1-dev \
-    wget
+    wget \
+    git \
+    build-essential \
+    pkg-config
+
+
+RUN wget -qOrustup.sh https://sh.rustup.rs
+RUN sh rustup.sh -y
+ENV PATH "/root/.cargo/bin:$PATH"
+
+RUN git clone https://github.com/librespot-org/librespot.git
+WORKDIR /librespot
+RUN cargo build --release
 
 WORKDIR /
 RUN wget -qOboost.tar.bz2 https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
