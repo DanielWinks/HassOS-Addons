@@ -1,5 +1,4 @@
 ARG BUILD_FROM
-ARG BOOST_VER
 
 FROM debian:stretch as builder
 
@@ -19,7 +18,7 @@ RUN apt-get update && \
     wget
 
 WORKDIR /
-RUN wget -qOboost.tar.bz2 "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VER}/source/boost_${BOOST_VER}.tar.bz2"
+RUN wget -qOboost.tar.bz2 https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
 RUN mkdir /boost
 RUN tar --strip-components=1 -xf boost.tar.bz2 -C /boost
 RUN git clone https://github.com/badaix/snapcast.git
