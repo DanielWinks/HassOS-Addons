@@ -6,8 +6,14 @@
   "image": "dwinks/snapserver-{arch}",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
+  "host_network": false,
+  "ports": {
+    "1704/tcp": 1704,
+    "1705/tcp": 1705,
+    "1780/tcp": 1780
+  },
   "boot": "auto",
-  "map": ["share"],
+  "map": [],
   "options": {},
   "schema": {}
 }
