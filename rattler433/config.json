@@ -17,6 +17,10 @@
       "active": false,
       "folder": "rattler"
     },
+    "mqtt_creator": {
+      "active": false,
+      "folder": "rattler"
+    },
     "mqtt_host": "",
     "mqtt_port": 1883,
     "mqtt_user": "sdr",
@@ -26,6 +30,10 @@
     "mqtt_prefix": "str",
     "retain": "bool",
     "customize": {
+      "active": "bool",
+      "folder": "str?"
+    },
+    "mqtt_creator": {
       "active": "bool",
       "folder": "str?"
     },
