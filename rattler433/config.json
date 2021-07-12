@@ -12,6 +12,7 @@
   "usb": true,
   "options": {
     "mqtt_prefix": "rtl_433",
+    "ha_discovery_topic": "homeassistant",
     "retain": true,
     "customize": {
       "active": false,
@@ -28,6 +29,7 @@
   },
   "schema": {
     "mqtt_prefix": "str",
+    "ha_discovery_topic": "str?",
     "retain": "bool",
     "customize": {
       "active": "bool",
