@@ -1,6 +1,6 @@
 {
   "name": "Rattler 433",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "slug": "rtl_433_hassio",
   "description": "RTL_433 for Home Assistant",
   "image": "dwinks/rattler433-{arch}",
@@ -26,6 +26,7 @@
       "name": "motion sensor",
       "model": "WS4904P",
       "manufacturer": "DSC-Security",
+      "type": "motion",
       "uid": "1111111",
       "id": "12345",
       "channel": "A"
@@ -48,6 +49,7 @@
         "name": "str",
         "model": "str",
         "manufacturer": "str",
+        "type": "str",
         "uid": "str?",
         "id": "str?",
         "channel": "str?"
