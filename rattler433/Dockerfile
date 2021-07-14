@@ -36,7 +36,7 @@ ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib"
 
 WORKDIR /
 
-RUN apk add --no-cache --update libusb python3 && \
+RUN apk add --no-cache --update libusb python3 py3-pip && \
     python3 -m pip install -r requirements.txt
 
 COPY --from=builder /usr/local/ /usr/local/
