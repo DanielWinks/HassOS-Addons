@@ -37,7 +37,7 @@ ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib"
 WORKDIR /
 
 RUN apk add --no-cache --update libusb python3 py3-pip && \
-    python3 -m pip install -r paho-mqtt ruamel.yaml
+    python3 -m pip install paho-mqtt ruamel.yaml
 
 COPY --from=builder /usr/local/ /usr/local/
 COPY --from=builder /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
