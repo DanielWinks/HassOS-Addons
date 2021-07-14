@@ -3,5 +3,46 @@
 # Home Assistant Add-on: Rattler 433
 # Creates MQTT devices in Home Assistant
 # ==============================================================================
+# Declarations for MQTT
+declare host
+declare password
+declare port
+declare username
+
+if ! bashio::services.available "mqtt"; then
+  bashio::log.info "No internal MQTT service found"
+  if bashio::config.has_value "mqtt_host"; then
+    host=$(bashio::config 'mqtt_host')
+  else
+    bashio::log.info "No external MQTT service defined"
+  fi
+  if bashio::config.has_value "mqtt_port"; then
+    port=$(bashio::config 'mqtt_port')
+  else
+    bashio::log.info "No external MQTT service defined"
+  fi
+  if bashio::config.has_value "mqtt_user"; then
+    username=$(bashio::config 'mqtt_user')
+  else
+    bashio::log.info "No external MQTT service defined"
+  fi
+  if bashio::config.has_value "mqtt_pass"; then
+    password=$(bashio::config 'mqtt_pass')
+  else
+    bashio::log.info "No external MQTT service defined"
+  fi
+else
+  host=$(bashio::services "mqtt" "host")
+  password=$(bashio::services "mqtt" "password")
+  port=$(bashio::services "mqtt" "port")
+  username=$(bashio::services "mqtt" "username")
+fi
+
+echo "{" >/data/mqtt.json
+echo "mqtt_host: ${host}," >>/data/mqtt.json
+echo "mqtt_port: ${port}," >>/data/mqtt.json
+echo "mqtt_user: ${username}," >>/data/mqtt.json
+echo "matt_pass: ${password}" >>/data/mqtt.json
+echo "}" >>/data/mqtt.json
 
 /usr/bin/python3 /rattler/device_creator/main.py

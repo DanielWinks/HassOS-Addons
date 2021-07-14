@@ -18,63 +18,55 @@ _LOGGER.addHandler(handler)
 _CLIENT = mqtt.Client()
 
 
-class DeviceCreator:
-    """Create MQTT Devices in Home Assistant for rtl_433."""
+def create_devices() -> None:
 
-    def __init__(self) -> None:
-        """Initialize DeviceCreator class."""
-        self._config = None
-        self._ha_disc = None
-        self._mqtt_client_id = "rattler_mqtt_creator"
-        self._mqtt_host = None
-        self._mqtt_port = None
-        self._mqtt_qos = 2
-        self._mqtt_retain = True
-        _LOGGER.info("MQTT Device Creator Initialized.")
+    with open("/data/options.json") as file:
+        try:
+            options_json: Dict[str, Any] = json.load(file)
+        except JSONDecodeError as ex:
+            _LOGGER.log(level=logging.ERROR, msg=ex)
 
-    def create_devices(self) -> None:
+    with open("/data/mqtt.json") as file:
+        try:
+            mqtt_json: Dict[str, Any] = json.load(file)
+        except JSONDecodeError as ex:
+            _LOGGER.log(level=logging.ERROR, msg=ex)
 
-        with open("/data/options.json") as file:
-            try:
-                self._config: Dict[str, Any] = json.load(file)
-            except JSONDecodeError as ex:
-                _LOGGER.log(level=logging.ERROR, msg=ex)
+    ha_disc: str = options_json["ha_discovery_topic"]
+    mqtt_host: str = mqtt_json["mqtt_host"]
+    mqtt_port: int = mqtt_json["mqtt_port"]
+    _CLIENT.reinitialise(client_id="rattler_mqtt_creator")
+    username = mqtt_json.get("mqtt_user")
+    password = mqtt_json.get("mqtt_pass")
+    if None not in (username, password):
+        _CLIENT.username_pw_set(username=username, password=password)
 
-        self._ha_disc: str = self._config["ha_discovery_topic"]
-        self._mqtt_host: str = self._config["host"]
-        self._mqtt_port: int = self._config["port"]
-        _CLIENT.reinitialise(client_id=self._mqtt_client_id)
-        username = self._config.get("username")
-        password = self._config.get("password")
-        if None not in (username, password):
-            _CLIENT.username_pw_set(username=username, password=password)
+    if not _CLIENT.is_connected():
+        _CLIENT.connect(host=mqtt_host, port=mqtt_port, keepalive=60)
 
-        if not _CLIENT.is_connected():
-            _CLIENT.connect(host=self._mqtt_host, port=self._mqtt_port, keepalive=60)
-
-        devices: List[Dict] = self._config["devices"]
-        for device in devices:
-            manu = device["manufacturer"]
-            model = device["model"]
-            name = device["name"]
-            if "uid" in device.keys():
-                uid = device["uid"]
-            if "id" in device.keys():
-                id = device["id"]
-            if "channel" in device.keys():
-                channel = device["channel"]
-            if device["type"] == "motion":
-                create_motion_sensor(manu, model, uid, name, self._ha_disc)
-            elif device["type"] == "contact":
-                create_contact_sensor(manu, model, uid, name, self._ha_disc)
-            elif device["type"] == "glassbreak":
-                create_glassbreak_sensor(manu, model, uid, name, self._ha_disc)
-            elif device["type"] == "temp_f_hum":
-                create_temp_hum_f_sensor(manu, model, channel, id, name, self._ha_disc)
-            elif device["type"] == "temp_c_hum":
-                create_temp_hum_c_sensor(manu, model, channel, id, name, self._ha_disc)
-            elif device["type"] == "sonoff_remote":
-                create_sonoff_remote(manu, model, uid, name, self._ha_disc)
+    devices: List[Dict] = options_json["devices"]
+    for device in devices:
+        manu = device["manufacturer"]
+        model = device["model"]
+        name = device["name"]
+        if "uid" in device.keys():
+            uid = device["uid"]
+        if "id" in device.keys():
+            id = device["id"]
+        if "channel" in device.keys():
+            channel = device["channel"]
+        if device["type"] == "motion":
+            create_motion_sensor(manu, model, uid, name, ha_disc)
+        elif device["type"] == "contact":
+            create_contact_sensor(manu, model, uid, name, ha_disc)
+        elif device["type"] == "glassbreak":
+            create_glassbreak_sensor(manu, model, uid, name, ha_disc)
+        elif device["type"] == "temp_f_hum":
+            create_temp_hum_f_sensor(manu, model, channel, id, name, ha_disc)
+        elif device["type"] == "temp_c_hum":
+            create_temp_hum_c_sensor(manu, model, channel, id, name, ha_disc)
+        elif device["type"] == "sonoff_remote":
+            create_sonoff_remote(manu, model, uid, name, ha_disc)
 
 
 def mstr(string):
@@ -508,5 +500,4 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format="%(message)s")
     _LOGGER.info("Starting Rattler MQTT Device Creator...")
-    dc = DeviceCreator()
-    dc.create_devices()
+    create_devices()
