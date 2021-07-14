@@ -9,11 +9,11 @@ from typing import Any, Dict, List
 import paho.mqtt.client as mqtt
 
 _LOGGER = logging.getLogger("Main")
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-_LOGGER.addHandler(handler)
+# handler = logging.StreamHandler(sys.stdout)
+# handler.setLevel(logging.DEBUG)
+# formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# handler.setFormatter(formatter)
+# _LOGGER.addHandler(handler)
 
 _CLIENT = mqtt.Client()
 
@@ -34,15 +34,11 @@ def create_devices() -> None:
 
     ha_disc: str = options_json["ha_discovery_topic"]
     _CLIENT.reinitialise(client_id="rattler_mqtt_creator")
+    _LOGGER.info(f"Publishing to HA Discovery Topic: {ha_disc}")
     mqtt_user = mqtt_json["mqtt_user"]
     mqtt_pass = mqtt_json["mqtt_pass"]
-    # if None not in (username, password):
-    _LOGGER.info(f"Connecting as user: {mqtt_user}")
-    _LOGGER.info(f"Connecting as pass: {mqtt_pass}")
-    _CLIENT.username_pw_set(
-        username=mqtt_json["mqtt_user"],
-        password=mqtt_json["mqtt_pass"],
-    )
+    if None not in (mqtt_user, mqtt_pass):
+        _CLIENT.username_pw_set(username=mqtt_user, password=mqtt_pass)
 
     devices: List[Dict] = options_json["devices"]
     for device in devices:
@@ -248,6 +244,10 @@ def create_motion_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    _LOGGER.info(f"Publishing message: ")
+    _LOGGER.info(f"{topic}")
+    _LOGGER.info(f"{payload}")
+    _LOGGER.info(f"MQTT is connected: {_CLIENT.is_connected()}")
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create tamper:
