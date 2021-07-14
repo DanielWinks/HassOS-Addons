@@ -42,7 +42,7 @@ echo "{" >/data/mqtt.json
 echo "\"mqtt_host\": \"${host}\"," >>/data/mqtt.json
 echo "\"mqtt_port\": ${port}," >>/data/mqtt.json
 echo "\"mqtt_user\": \"${username}\"," >>/data/mqtt.json
-echo "\"matt_pass\": \"${password}\"" >>/data/mqtt.json
+echo "\"mqtt_pass\": \"${password}\"" >>/data/mqtt.json
 echo "}" >>/data/mqtt.json
 
 /usr/bin/python3 /rattler/device_creator/main.py
