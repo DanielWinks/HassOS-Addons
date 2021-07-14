@@ -33,8 +33,8 @@ def create_devices() -> None:
             _LOGGER.log(level=logging.ERROR, msg=ex)
 
     ha_disc: str = options_json["ha_discovery_topic"]
-    mqtt_host: str = mqtt_json["mqtt_host"]
-    mqtt_port: int = mqtt_json["mqtt_port"]
+    host: str = mqtt_json["mqtt_host"]
+    port: int = mqtt_json["mqtt_port"]
     _CLIENT.reinitialise(client_id="rattler_mqtt_creator")
     username = mqtt_json.get("mqtt_user")
     password = mqtt_json.get("mqtt_pass")
@@ -42,7 +42,7 @@ def create_devices() -> None:
         _CLIENT.username_pw_set(username=username, password=password)
 
     if not _CLIENT.is_connected():
-        _CLIENT.connect(host=mqtt_host, port=mqtt_port, keepalive=60)
+        _CLIENT.connect(host=host, port=port, keepalive=60)
 
     devices: List[Dict] = options_json["devices"]
     for device in devices:
