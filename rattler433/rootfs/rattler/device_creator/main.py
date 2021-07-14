@@ -2,7 +2,7 @@
 """Get device config from Home Assistant Add-On configuration options and create devices in Home Assistant"""
 import json
 import logging
-import sys
+import time
 from json import JSONDecodeError
 from typing import Any, Dict, List
 
@@ -37,17 +37,19 @@ def create_devices() -> None:
     _LOGGER.info(f"Publishing to HA Discovery Topic: {ha_disc}")
     mqtt_user = mqtt_json["mqtt_user"]
     mqtt_pass = mqtt_json["mqtt_pass"]
+    mqtt_host = mqtt_json["mqtt_host"]
+    mqtt_port = mqtt_json["mqtt_port"]
     if None not in (mqtt_user, mqtt_pass):
         _CLIENT.username_pw_set(username=mqtt_user, password=mqtt_pass)
+    _CLIENT.connect(host=mqtt_host, port=mqtt_port, keepalive=60)
+    _CLIENT.loop_start()
+    while not _CLIENT.is_connected():
+        time.sleep(10)
+        _LOGGER.debug("Connecting to broker...")
+    _LOGGER.info(f"MQTT Broker connected: {_CLIENT.is_connected()}")
 
     devices: List[Dict] = options_json["devices"]
     for device in devices:
-        if not _CLIENT.is_connected():
-            _CLIENT.connect(
-                host=mqtt_json["mqtt_host"],
-                port=mqtt_json["mqtt_port"],
-                keepalive=60,
-            )
         manu = device["manufacturer"]
         model = device["model"]
         name = device["name"]
