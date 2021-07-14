@@ -43,13 +43,15 @@
     "mqtt_port": "int?",
     "mqtt_user": "str?",
     "mqtt_pass": "str?",
-    "devices": {
-      "name": "str",
-      "model": "str",
-      "manufacturer": "str",
-      "uid": "str?",
-      "id": "str?",
-      "channel": "str?"
-    }
+    "devices": [
+      {
+        "name": "str",
+        "model": "str",
+        "manufacturer": "str",
+        "uid": "str?",
+        "id": "str?",
+        "channel": "str?"
+      }
+    ]
   }
 }
