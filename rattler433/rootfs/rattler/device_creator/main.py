@@ -3,11 +3,10 @@
 import json
 import logging
 import sys
+from json import JSONDecodeError
 from typing import Any, Dict, List
 
 import paho.mqtt.client as mqtt
-from ruamel.yaml import YAML as yaml
-from ruamel.yaml import YAMLError
 
 _LOGGER = logging.getLogger("Main")
 handler = logging.StreamHandler(sys.stdout)
@@ -17,7 +16,6 @@ handler.setFormatter(formatter)
 _LOGGER.addHandler(handler)
 
 _CLIENT = mqtt.Client()
-YAML = yaml(typ="safe")
 
 
 class DeviceCreator:
@@ -25,10 +23,9 @@ class DeviceCreator:
 
     def __init__(self) -> None:
         """Initialize DeviceCreator class."""
-        self._devices = None
+        self._config = None
         self._ha_disc = None
         self._mqtt_client_id = "rattler_mqtt_creator"
-        self._mqtt_config = None
         self._mqtt_host = None
         self._mqtt_port = None
         self._mqtt_qos = 2
@@ -37,48 +34,47 @@ class DeviceCreator:
 
     def create_devices(self) -> None:
 
-        with open("/data/devices.yaml") as file:
+        with open("/data/options.json") as file:
             try:
-                yaml_config: Dict[str, Any] = YAML.load(file)
-            except YAMLError as ex:
+                self._config: Dict[str, Any] = json.load(file)
+            except JSONDecodeError as ex:
                 _LOGGER.log(level=logging.ERROR, msg=ex)
 
-        self._mqtt_config: Dict[str, Any] = yaml_config["mqtt"]
-        self._ha_disc: str = self._mqtt_config["ha_discovery_topic"]
-        self._mqtt_host: str = self._mqtt_config["host"]
-        self._mqtt_port: int = self._mqtt_config["port"]
-        self._mqtt_qos: int = self._mqtt_config["qos"]
-        self._mqtt_retain: bool = self._mqtt_config["retained"]
-        self._mqtt_client_id: str = self._mqtt_config.get("client_id")
+        self._ha_disc: str = self._config["ha_discovery_topic"]
+        self._mqtt_host: str = self._config["host"]
+        self._mqtt_port: int = self._config["port"]
         _CLIENT.reinitialise(client_id=self._mqtt_client_id)
-        username = self._mqtt_config.get("username")
-        password = self._mqtt_config.get("password")
+        username = self._config.get("username")
+        password = self._config.get("password")
         if None not in (username, password):
             _CLIENT.username_pw_set(username=username, password=password)
 
         if not _CLIENT.is_connected():
             _CLIENT.connect(host=self._mqtt_host, port=self._mqtt_port, keepalive=60)
 
-        self._devices: List[Dict] = yaml_config["devices"]
-        for device in self._devices:
+        devices: List[Dict] = self._config["devices"]
+        for device in devices:
+            manu = device["manufacturer"]
+            model = device["model"]
+            name = device["name"]
+            if "uid" in device.keys():
+                uid = device["uid"]
+            if "id" in device.keys():
+                id = device["id"]
+            if "channel" in device.keys():
+                channel = device["channel"]
             if device["type"] == "motion":
-                entities = yaml_config["mqtt_creator"]["motion"]
-                create_motion_sensor(entities, self._ha_disc, _CLIENT)
-            if device["type"] == "contact":
-                entities = yaml_config["mqtt_creator"]["contact"]
-                create_contact_sensor(entities, self._ha_disc, _CLIENT)
-            if device["type"] == "glassbreak":
-                entities = yaml_config["mqtt_creator"]["glassbreak"]
-                create_glassbreak_sensor(entities, self._ha_disc, _CLIENT)
-            if device["type"] == "temp_f_hum":
-                entities = yaml_config["mqtt_creator"]["temp_f_hum"]
-                create_temp_hum_f_sensor(entities, self._ha_disc, _CLIENT)
-            if device["type"] == "temp_c_hum":
-                entities = yaml_config["mqtt_creator"]["temp_c_hum"]
-                create_temp_hum_c_sensor(entities, self._ha_disc, _CLIENT)
-            if device["type"] == "sonoff_remote":
-                entities = yaml_config["mqtt_creator"]["sonoff_remote"]
-                create_temp_hum_c_sensor(entities, self._ha_disc, _CLIENT)
+                create_motion_sensor(manu, model, uid, name, self._ha_disc)
+            elif device["type"] == "contact":
+                create_contact_sensor(manu, model, uid, name, self._ha_disc)
+            elif device["type"] == "glassbreak":
+                create_glassbreak_sensor(manu, model, uid, name, self._ha_disc)
+            elif device["type"] == "temp_f_hum":
+                create_temp_hum_f_sensor(manu, model, channel, id, name, self._ha_disc)
+            elif device["type"] == "temp_c_hum":
+                create_temp_hum_c_sensor(manu, model, channel, id, name, self._ha_disc)
+            elif device["type"] == "sonoff_remote":
+                create_sonoff_remote(manu, model, uid, name, self._ha_disc)
 
 
 def mstr(string):
@@ -243,318 +239,270 @@ def _create_temp_c(dev_name, manufacturer, model, uid):
     return str(json.dumps(payload))
 
 
-def create_motion_sensor(entities: List, disc: str, mqtt_client: _CLIENT):
-    for entity in entities:
-        manu = entity["manufacturer"]
-        model = entity["model"]
-        uid = entity["uid"]
-        nm = entity["name"]
+def create_motion_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
 
-        # Create battery:
-        payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create battery:
+    payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create tamper:
-        payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = (
-            f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
-        )
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create tamper:
+    payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create time:
-        payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create event:
-        payload = _create_motion_event(
-            manufacturer=manu, model=model, dev_name=nm, uid=uid
-        )
-        topic = (
-            f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/event/config"
-        )
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create event:
+    payload = _create_motion_event(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/event/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
-def create_contact_sensor(entities: List, disc: str, mqtt_client: _CLIENT):
-    for entity in entities:
-        manu = entity["manufacturer"]
-        model = entity["model"]
-        uid = entity["uid"]
-        nm = entity["name"]
+def create_contact_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
 
-        # Create battery:
-        payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create battery:
+    payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create tamper:
-        payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = (
-            f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
-        )
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create tamper:
+    payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create time:
-        payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create closed:
-        payload = _create_contact(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = (
-            f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/door/config"
-        )
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create closed:
+    payload = _create_contact(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/door/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
-def create_contact_sensor2(entities: List, disc: str, mqtt_client: _CLIENT):
-    for entity in entities:
-        manu = entity["manufacturer"]
-        model = entity["model"]
-        uid = entity["uid"]
-        nm = entity["name"]
+def create_contact_sensor2(manu: str, model: str, uid: str, nm: str, disc: str):
 
-        # # Create battery:
-        # payload = create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        # topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
-        # mqtt.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # # Create battery:
+    # payload = create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    # topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    # _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # # Create tamper:
-        # payload = create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        # topic = (
-        #     f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
-        # )
-        # mqtt.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # # Create tamper:
+    # payload = create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    # topic = (
+    #     f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
+    # )
+    # _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create time:
-        payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create closed:
-        payload = _create_contact2(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = (
-            f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/door/config"
-        )
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create closed:
+    payload = _create_contact2(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/door/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
-def create_glassbreak_sensor(entities: List, disc: str, mqtt_client: _CLIENT):
-    for entity in entities:
-        manu = entity["manufacturer"]
-        model = entity["model"]
-        uid = entity["uid"]
-        nm = entity["name"]
+def create_glassbreak_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
 
-        # Create battery:
-        payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create battery:
+    payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create tamper:
-        payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = (
-            f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
-        )
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create tamper:
+    payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create time:
-        payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create event:
-        payload = _create_glassbreak_event(
-            manufacturer=manu, model=model, dev_name=nm, uid=uid
-        )
-        topic = (
-            f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/event/config"
-        )
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create event:
+    payload = _create_glassbreak_event(
+        manufacturer=manu, model=model, dev_name=nm, uid=uid
+    )
+    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/event/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
-def create_temp_hum_f_sensor(entities: List, disc: str, mqtt_client: _CLIENT):
-    for entity in entities:
-        manu = entity["manufacturer"]
-        model = entity["model"]
-        channel = entity["channel"]
-        id = entity["id"]
-        uid = channel + "/" + id
-        nm = entity["name"]
+def create_temp_hum_f_sensor(
+    manu: str, model: str, channel: str, id: str, nm: str, disc: str
+):
 
-        # Create battery:
-        payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    uid = channel + "/" + id
 
-        # Create temp:
-        payload = _create_temp_f(
-            manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid
-        )
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/temp/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create battery:
+    payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create time:
-        payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create temp:
+    payload = _create_temp_f(
+        manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid
+    )
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/temp/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create humidity:
-        payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/humidity/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+
+    # Create humidity:
+    payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/humidity/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
-def create_temp_hum_c_sensor(entities: List, disc: str, mqtt_client: _CLIENT):
-    for entity in entities:
-        manu = entity["manufacturer"]
-        model = entity["model"]
-        channel = entity["channel"]
-        id = entity["id"]
-        uid = channel + "/" + id
-        nm = entity["name"]
+def create_temp_hum_c_sensor(
+    manu: str, model: str, channel: str, id: str, nm: str, disc: str
+):
 
-        # Create battery:
-        payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    uid = channel + "/" + id
 
-        # Create temp:
-        payload = _create_temp_c(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/temp/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create battery:
+    payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create time:
-        payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create temp:
+    payload = _create_temp_c(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/temp/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create humidity:
-        payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/humidity/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+
+    # Create humidity:
+    payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/humidity/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
-def create_sonoff_remote(entities: List, disc: str, mqtt_client: _CLIENT):
-    for entity in entities:
-        manu = entity["manufacturer"]
-        model = entity["model"]
-        uid = entity["uid"]
-        nm = entity["name"]
-        disco_prefix = (
-            f"{disc}/device_automation/{mstr(manu)}_{mstr(model)}_{mstr(uid)}"
-        )
+def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
 
-        # Create time:
-        payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-        topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    disco_prefix = f"{disc}/device_automation/{mstr(manu)}_{mstr(model)}_{mstr(uid)}"
 
-        # Create button a short press:
-        payload = _create_button(
-            nm,
-            manu,
-            model,
-            uid,
-            "button_short_press",
-            "Button A",
-            "A",
-        )
-        topic = disco_prefix + "/button_a/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create button b short press:
-        payload = _create_button(
-            nm,
-            manu,
-            model,
-            uid,
-            "button_short_press",
-            "Button B",
-            "B",
-        )
-        topic = disco_prefix + "/button_b/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create button a short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        "Button A",
+        "A",
+    )
+    topic = disco_prefix + "/button_a/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create button c short press:
-        payload = _create_button(
-            nm,
-            manu,
-            model,
-            uid,
-            "button_short_press",
-            "Button C",
-            "C",
-        )
-        topic = disco_prefix + "/button_c/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create button b short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        "Button B",
+        "B",
+    )
+    topic = disco_prefix + "/button_b/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create button d short press:
-        payload = _create_button(
-            nm,
-            manu,
-            model,
-            uid,
-            "button_short_press",
-            "Button D",
-            "D",
-        )
-        topic = disco_prefix + "/button_d/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create button c short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        "Button C",
+        "C",
+    )
+    topic = disco_prefix + "/button_c/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create button e short press:
-        payload = _create_button(
-            nm,
-            manu,
-            model,
-            uid,
-            "button_short_press",
-            "Button E",
-            "E",
-        )
-        topic = disco_prefix + "/button_e/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create button d short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        "Button D",
+        "D",
+    )
+    topic = disco_prefix + "/button_d/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create button f short press:
-        payload = _create_button(
-            nm,
-            manu,
-            model,
-            uid,
-            "button_short_press",
-            "Button F",
-            "F",
-        )
-        topic = disco_prefix + "/button_f/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create button e short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        "Button E",
+        "E",
+    )
+    topic = disco_prefix + "/button_e/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create button g short press:
-        payload = _create_button(
-            nm,
-            manu,
-            model,
-            uid,
-            "button_short_press",
-            "Button G",
-            "G",
-        )
-        topic = disco_prefix + "/button_g/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create button f short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        "Button F",
+        "F",
+    )
+    topic = disco_prefix + "/button_f/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
-        # Create button h short press:
-        payload = _create_button(
-            nm,
-            manu,
-            model,
-            uid,
-            "button_short_press",
-            "Button H",
-            "H",
-        )
-        topic = disco_prefix + "/button_h/config"
-        mqtt_client.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # Create button g short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        "Button G",
+        "G",
+    )
+    topic = disco_prefix + "/button_g/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+
+    # Create button h short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        "Button H",
+        "H",
+    )
+    topic = disco_prefix + "/button_h/config"
+    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
 if __name__ == "__main__":
