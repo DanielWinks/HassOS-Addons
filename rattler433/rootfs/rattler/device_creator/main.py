@@ -61,25 +61,25 @@ def create_devices() -> None:
             channel = device["channel"]
         if device["type"] == "motion":
             create_motion_sensor(manu, model, uid, name, ha_disc)
-            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
+            _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "contact":
             create_contact_sensor(manu, model, uid, name, ha_disc)
-            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
+            _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "glassbreak":
             create_glassbreak_sensor(manu, model, uid, name, ha_disc)
-            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
+            _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "temp_f_hum":
             create_temp_hum_f_sensor(manu, model, channel, id, name, ha_disc)
-            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
+            _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "temp_c_hum":
             create_temp_hum_c_sensor(manu, model, channel, id, name, ha_disc)
-            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
+            _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "sonoff_remote":
             create_sonoff_remote(manu, model, uid, name, ha_disc)
-            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
+            _LOGGER.info(f"Creating device: {name}")
 
 
-def mstr(string):
+def _mstr(string):
     return string.lower().replace("-", "_").replace(" ", "_").replace("/", "_")
 
 
@@ -245,26 +245,26 @@ def create_motion_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
 
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
-    _LOGGER.info(f"Publishing message: ")
-    _LOGGER.info(f"{topic}")
-    _LOGGER.info(f"{payload}")
-    _LOGGER.info(f"MQTT is connected: {_CLIENT.is_connected()}")
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
+    topic = (
+        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
+    )
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create event:
     payload = _create_motion_event(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/event/config"
+    topic = (
+        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/event/config"
+    )
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
@@ -272,22 +272,26 @@ def create_contact_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
 
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
+    topic = (
+        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
+    )
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create closed:
     payload = _create_contact(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/door/config"
+    topic = (
+        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/door/config"
+    )
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
@@ -307,12 +311,14 @@ def create_contact_sensor2(manu: str, model: str, uid: str, nm: str, disc: str):
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create closed:
     payload = _create_contact2(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/door/config"
+    topic = (
+        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/door/config"
+    )
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
@@ -320,24 +326,28 @@ def create_glassbreak_sensor(manu: str, model: str, uid: str, nm: str, disc: str
 
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
+    topic = (
+        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
+    )
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create event:
     payload = _create_glassbreak_event(
         manufacturer=manu, model=model, dev_name=nm, uid=uid
     )
-    topic = f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/event/config"
+    topic = (
+        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/event/config"
+    )
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
@@ -349,24 +359,24 @@ def create_temp_hum_f_sensor(
 
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create temp:
     payload = _create_temp_f(
         manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid
     )
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/temp/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/temp/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create humidity:
     payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/humidity/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/humidity/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
@@ -378,32 +388,32 @@ def create_temp_hum_c_sensor(
 
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create temp:
     payload = _create_temp_c(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/temp/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/temp/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create humidity:
     payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/humidity/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/humidity/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
 
 def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
 
-    disco_prefix = f"{disc}/device_automation/{mstr(manu)}_{mstr(model)}_{mstr(uid)}"
+    disco_prefix = f"{disc}/device_automation/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}"
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/time/config"
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
 
     # Create button a short press:
