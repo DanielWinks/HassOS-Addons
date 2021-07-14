@@ -57,16 +57,22 @@ def create_devices() -> None:
             channel = device["channel"]
         if device["type"] == "motion":
             create_motion_sensor(manu, model, uid, name, ha_disc)
+            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
         elif device["type"] == "contact":
             create_contact_sensor(manu, model, uid, name, ha_disc)
+            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
         elif device["type"] == "glassbreak":
             create_glassbreak_sensor(manu, model, uid, name, ha_disc)
+            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
         elif device["type"] == "temp_f_hum":
             create_temp_hum_f_sensor(manu, model, channel, id, name, ha_disc)
+            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
         elif device["type"] == "temp_c_hum":
             create_temp_hum_c_sensor(manu, model, channel, id, name, ha_disc)
+            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
         elif device["type"] == "sonoff_remote":
             create_sonoff_remote(manu, model, uid, name, ha_disc)
+            _LOGGER.info(f"Creating device: {manu}:{model} - {name}")
 
 
 def mstr(string):
