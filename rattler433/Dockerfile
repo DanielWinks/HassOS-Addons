@@ -36,7 +36,8 @@ ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib"
 
 WORKDIR /
 
-RUN apk add --no-cache --update libusb python3
+RUN apk add --no-cache --update libusb python3 && \
+    python3 -m pip install -r requirements.txt
 
 COPY --from=builder /usr/local/ /usr/local/
 COPY --from=builder /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
