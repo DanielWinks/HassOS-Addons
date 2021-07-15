@@ -2,20 +2,12 @@
 """Get device config from Home Assistant Add-On configuration options and create devices in Home Assistant"""
 import json
 import logging
-import time
 from json import JSONDecodeError
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
-import paho.mqtt.client as mqtt
+import paho.mqtt.publish as publish
 
 _LOGGER = logging.getLogger("Main")
-# handler = logging.StreamHandler(sys.stdout)
-# handler.setLevel(logging.DEBUG)
-# formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-# handler.setFormatter(formatter)
-# _LOGGER.addHandler(handler)
-
-_CLIENT = mqtt.Client()
 
 
 def create_devices() -> None:
@@ -33,22 +25,10 @@ def create_devices() -> None:
             _LOGGER.log(level=logging.ERROR, msg=ex)
 
     ha_disc: str = options_json["ha_discovery_topic"]
-    _CLIENT.reinitialise(client_id="rattler_mqtt_creator")
     _LOGGER.info(f"Publishing to HA Discovery Topic: {ha_disc}")
-    mqtt_user = mqtt_json["mqtt_user"]
-    mqtt_pass = mqtt_json["mqtt_pass"]
-    mqtt_host = mqtt_json["mqtt_host"]
-    mqtt_port = mqtt_json["mqtt_port"]
-    if None not in (mqtt_user, mqtt_pass):
-        _CLIENT.username_pw_set(username=mqtt_user, password=mqtt_pass)
-    _CLIENT.connect(host=mqtt_host, port=mqtt_port, keepalive=60)
-    _CLIENT.loop_start()
-    while not _CLIENT.is_connected():
-        time.sleep(10)
-        _LOGGER.debug("Connecting to broker...")
-    _LOGGER.info(f"MQTT Broker connected: {_CLIENT.is_connected()}")
 
     devices: List[Dict] = options_json["devices"]
+    msgs = []
     for device in devices:
         manu = device["manufacturer"]
         model = device["model"]
@@ -60,35 +40,47 @@ def create_devices() -> None:
         if "channel" in device.keys():
             channel = device["channel"]
         if device["type"] == "motion":
-            create_motion_sensor(manu, model, uid, name, ha_disc)
+            msgs.extend(create_motion(manu, model, uid, name, ha_disc))
             _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "contact":
-            create_contact_sensor(manu, model, uid, name, ha_disc)
+            msgs.extend(create_contact(manu, model, uid, name, ha_disc))
             _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "glassbreak":
-            create_glassbreak_sensor(manu, model, uid, name, ha_disc)
+            msgs.extend(create_glassbreak(manu, model, uid, name, ha_disc))
             _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "temp_f_hum":
-            create_temp_hum_f_sensor(manu, model, channel, id, name, ha_disc)
+            msgs.extend(create_temp_hum_f(manu, model, channel, id, name, ha_disc))
             _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "temp_c_hum":
-            create_temp_hum_c_sensor(manu, model, channel, id, name, ha_disc)
+            msgs.extend(create_temp_hum_c(manu, model, channel, id, name, ha_disc))
             _LOGGER.info(f"Creating device: {name}")
         elif device["type"] == "sonoff_remote":
-            create_sonoff_remote(manu, model, uid, name, ha_disc)
+            msgs.extend(create_sonoff_remote(manu, model, uid, name, ha_disc))
             _LOGGER.info(f"Creating device: {name}")
 
+    mqtt_user = mqtt_json["mqtt_user"]
+    mqtt_pass = mqtt_json["mqtt_pass"]
+    mqtt_host = mqtt_json["mqtt_host"]
+    mqtt_port = mqtt_json["mqtt_port"]
+    publish.multiple(
+        msgs=msgs,
+        hostname=mqtt_host,
+        port=mqtt_port,
+        client_id="rattler_mqtt_creator",
+        auth={"username": mqtt_user, "password": mqtt_pass},
+    )
 
-def _mstr(string):
-    return string.lower().replace("-", "_").replace(" ", "_").replace("/", "_")
+
+def _lstr(input_str: str) -> str:
+    return input_str.lower().replace("-", "_")
+
+
+def _mstr(input_str: str) -> str:
+    return _lstr(input_str).replace(" ", "_").replace("/", "_")
 
 
 def _create_device(manufacturer, model, dev_name, uid):
-    id = {
-        "identifiers": [
-            f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}"
-        ]
-    }
+    id = {"identifiers": [f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}"]}
     manu = {"manufacturer": f"{manufacturer}"}
     mod = {"model": f"{model}"}
     name = {"name": f"{dev_name}"}
@@ -103,9 +95,7 @@ def _create_battery(dev_name, manufacturer, model, uid):
     payload["unit_of_measurement"] = "%"
     payload["device_class"] = "battery"
     payload["force_update"] = "true"
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_battery"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_battery"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/battery_ok"
     return str(json.dumps(payload))
 
@@ -127,9 +117,7 @@ def _create_tamper(dev_name, manufacturer, model, uid):
     payload["payload_on"] = 1
     payload["payload_off"] = 0
     payload["force_update"] = "true"
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_tamper"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_tamper"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/tamper"
     return str(json.dumps(payload))
 
@@ -138,9 +126,7 @@ def _create_time(dev_name, manufacturer, model, uid):
     payload = {**_create_device(manufacturer, model, dev_name, uid)}
     payload["name"] = dev_name + " Time"
     payload["device_class"] = "timestamp"
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_time"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_time"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/time"
     return str(json.dumps(payload))
 
@@ -152,9 +138,7 @@ def _create_motion_event(dev_name, manufacturer, model, uid):
     payload["payload_on"] = 1
     payload["payload_off"] = 0
     payload["off_delay"] = 15
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_event"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_event"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/event"
     return str(json.dumps(payload))
 
@@ -165,9 +149,7 @@ def _create_contact(dev_name, manufacturer, model, uid):
     payload["device_class"] = "door"
     payload["payload_on"] = 0
     payload["payload_off"] = 1
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_closed"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_closed"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/closed"
     return str(json.dumps(payload))
 
@@ -178,9 +160,7 @@ def _create_contact2(dev_name, manufacturer, model, uid):
     payload["device_class"] = "door"
     payload["payload_on"] = 1
     payload["payload_off"] = 0
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_opened"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_opened"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/opened"
     return str(json.dumps(payload))
 
@@ -192,9 +172,7 @@ def _create_glassbreak_event(dev_name, manufacturer, model, uid):
     payload["payload_on"] = 1
     payload["payload_off"] = 0
     payload["off_delay"] = 1
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_event"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_event"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/event"
     return str(json.dumps(payload))
 
@@ -206,9 +184,7 @@ def _create_humidity(dev_name, manufacturer, model, uid):
     payload["force_update"] = "true"
     payload["unit_of_measurement"] = "%"
     payload["value_template"] = "{{value|int}}"
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_humidity"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_humidity"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/humidity"
     return str(json.dumps(payload))
 
@@ -220,9 +196,7 @@ def _create_temp_f(dev_name, manufacturer, model, uid):
     payload["force_update"] = "true"
     payload["unit_of_measurement"] = "°F"
     payload["value_template"] = "{{value|float|round(1)}}"
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_temp_f"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_temp_f"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/temperature_F"
     return str(json.dumps(payload))
 
@@ -234,112 +208,119 @@ def _create_temp_c(dev_name, manufacturer, model, uid):
     payload["force_update"] = "true"
     payload["unit_of_measurement"] = "°F"
     payload["value_template"] = "{{(value|int * 1.8 + 32)|round(0)}}"
-    payload[
-        "unique_id"
-    ] = f"{manufacturer.lower().replace('-','_')}_{model.lower().replace('-','_')}_{uid.replace('/','_')}_temp_f"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_temp_f"
     payload["state_topic"] = f"rtl_433/{manufacturer}/{uid}/temperature_C"
     return str(json.dumps(payload))
 
 
-def create_motion_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
+def create_motion(manu: str, model: str, uid: str, nm: str, disc: str) -> Dict[Tuple]:
 
+    msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = (
         f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
     )
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create event:
     payload = _create_motion_event(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = (
         f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/event/config"
     )
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
+    return msgs
 
 
-def create_contact_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
+def create_contact(manu: str, model: str, uid: str, nm: str, disc: str) -> Dict[Tuple]:
 
+    msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = (
         f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
     )
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create closed:
     payload = _create_contact(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = (
         f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/door/config"
     )
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
+    return msgs
 
 
-def create_contact_sensor2(manu: str, model: str, uid: str, nm: str, disc: str):
+def create_contact_sensor2(
+    manu: str, model: str, uid: str, nm: str, disc: str
+) -> Dict[Tuple]:
 
+    msgs = []
     # # Create battery:
     # payload = create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     # topic = f"{disc}/sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/battery/config"
-    # _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # msgs.append((topic, payload, 2, True))
 
     # # Create tamper:
     # payload = create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     # topic = (
     #     f"{disc}/binary_sensor/{mstr(manu)}_{mstr(model)}_{mstr(uid)}/tamper/config"
     # )
-    # _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    # msgs.append((topic, payload, 2, True))
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create closed:
     payload = _create_contact2(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = (
         f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/door/config"
     )
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
+    return msgs
 
 
-def create_glassbreak_sensor(manu: str, model: str, uid: str, nm: str, disc: str):
+def create_glassbreak(manu: str, model: str, uid: str, nm: str, disc: str):
 
+    msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = (
         f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
     )
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create event:
     payload = _create_glassbreak_event(
@@ -348,73 +329,78 @@ def create_glassbreak_sensor(manu: str, model: str, uid: str, nm: str, disc: str
     topic = (
         f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/event/config"
     )
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
+    return msgs
 
 
-def create_temp_hum_f_sensor(
+def create_temp_hum_f(
     manu: str, model: str, channel: str, id: str, nm: str, disc: str
-):
+) -> Dict[Tuple]:
 
     uid = channel + "/" + id
-
+    msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create temp:
     payload = _create_temp_f(
         manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid
     )
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/temp/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create humidity:
     payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/humidity/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
+    return msgs
 
 
-def create_temp_hum_c_sensor(
+def create_temp_hum_c(
     manu: str, model: str, channel: str, id: str, nm: str, disc: str
-):
+) -> Dict[Tuple]:
 
     uid = channel + "/" + id
-
+    msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create temp:
     payload = _create_temp_c(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/temp/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create humidity:
     payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/humidity/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
+    return msgs
 
 
-def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
+def create_sonoff_remote(
+    manu: str, model: str, uid: str, nm: str, disc: str
+) -> Dict[Tuple]:
 
     disco_prefix = f"{disc}/device_automation/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}"
-
+    msgs = []
     # Create time:
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create button a short press:
     payload = _create_button(
@@ -427,7 +413,7 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
         "A",
     )
     topic = disco_prefix + "/button_a/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create button b short press:
     payload = _create_button(
@@ -440,7 +426,7 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
         "B",
     )
     topic = disco_prefix + "/button_b/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create button c short press:
     payload = _create_button(
@@ -453,7 +439,7 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
         "C",
     )
     topic = disco_prefix + "/button_c/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create button d short press:
     payload = _create_button(
@@ -466,7 +452,7 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
         "D",
     )
     topic = disco_prefix + "/button_d/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create button e short press:
     payload = _create_button(
@@ -479,7 +465,7 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
         "E",
     )
     topic = disco_prefix + "/button_e/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create button f short press:
     payload = _create_button(
@@ -492,7 +478,7 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
         "F",
     )
     topic = disco_prefix + "/button_f/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create button g short press:
     payload = _create_button(
@@ -505,7 +491,7 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
         "G",
     )
     topic = disco_prefix + "/button_g/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
 
     # Create button h short press:
     payload = _create_button(
@@ -518,7 +504,8 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str, disc: str):
         "H",
     )
     topic = disco_prefix + "/button_h/config"
-    _CLIENT.publish(topic=topic, payload=payload, qos=2, retain=True)
+    msgs.append((topic, payload, 2, True))
+    return msgs
 
 
 if __name__ == "__main__":
