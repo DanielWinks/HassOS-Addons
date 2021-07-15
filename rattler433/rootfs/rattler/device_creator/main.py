@@ -213,7 +213,7 @@ def _create_temp_c(dev_name, manufacturer, model, uid):
     return str(json.dumps(payload))
 
 
-def create_motion(manu: str, model: str, uid: str, nm: str, disc: str) -> Dict[Tuple]:
+def create_motion(manu: str, model: str, uid: str, nm: str, disc: str) -> List[Tuple]:
 
     msgs = []
     # Create battery:
@@ -242,7 +242,7 @@ def create_motion(manu: str, model: str, uid: str, nm: str, disc: str) -> Dict[T
     return msgs
 
 
-def create_contact(manu: str, model: str, uid: str, nm: str, disc: str) -> Dict[Tuple]:
+def create_contact(manu: str, model: str, uid: str, nm: str, disc: str) -> List[Tuple]:
 
     msgs = []
     # Create battery:
@@ -273,7 +273,7 @@ def create_contact(manu: str, model: str, uid: str, nm: str, disc: str) -> Dict[
 
 def create_contact_sensor2(
     manu: str, model: str, uid: str, nm: str, disc: str
-) -> Dict[Tuple]:
+) -> List[Tuple]:
 
     msgs = []
     # # Create battery:
@@ -335,7 +335,7 @@ def create_glassbreak(manu: str, model: str, uid: str, nm: str, disc: str):
 
 def create_temp_hum_f(
     manu: str, model: str, channel: str, id: str, nm: str, disc: str
-) -> Dict[Tuple]:
+) -> List[Tuple]:
 
     uid = channel + "/" + id
     msgs = []
@@ -365,7 +365,7 @@ def create_temp_hum_f(
 
 def create_temp_hum_c(
     manu: str, model: str, channel: str, id: str, nm: str, disc: str
-) -> Dict[Tuple]:
+) -> List[Tuple]:
 
     uid = channel + "/" + id
     msgs = []
@@ -393,7 +393,7 @@ def create_temp_hum_c(
 
 def create_sonoff_remote(
     manu: str, model: str, uid: str, nm: str, disc: str
-) -> Dict[Tuple]:
+) -> List[Tuple]:
 
     disco_prefix = f"{disc}/device_automation/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}"
     msgs = []
