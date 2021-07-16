@@ -1,6 +1,6 @@
 {
   "name": "Rattler 433",
-  "version": "1.1.19",
+  "version": "1.1.20",
   "slug": "rtl_433_hassio",
   "description": "RTL_433 for Home Assistant",
   "image": "dwinks/rattler433-{arch}",
@@ -34,7 +34,7 @@
   },
   "schema": {
     "mqtt_prefix": "str",
-    "ha_discovery_topic": "str?",
+    "ha_discovery_topic": "str",
     "retain": "bool",
     "customize": {
       "active": "bool",
