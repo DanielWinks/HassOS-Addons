@@ -223,7 +223,7 @@ def _create_temp_c(dev_name, manufacturer, model, uid):
 def _create_temp_c_to_f(dev_name, manufacturer, model, uid):
     payload = _create_temp(dev_name, manufacturer, model, uid)
     payload["unit_of_measurement"] = "°F"
-    payload["value_template"] = "{{(value|int * 1.8 + 32)|round(0)}}"
+    payload["value_template"] = "{{(value|float * 1.8 + 32)|round(1)}}"
     payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_temp_c"
     payload["state_topic"] = f"{prefix}/{manufacturer}/{uid}/temperature_C"
     return str(json.dumps(payload))
@@ -232,7 +232,7 @@ def _create_temp_c_to_f(dev_name, manufacturer, model, uid):
 def _create_temp_f_to_c(dev_name, manufacturer, model, uid):
     payload = _create_temp(dev_name, manufacturer, model, uid)
     payload["unit_of_measurement"] = "°C"
-    payload["value_template"] = "{{((value|int - 32) * (5/9))|round(0)}}"
+    payload["value_template"] = "{{((value|float - 32) * (5/9))|round(1)}}"
     payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_temp_c"
     payload["state_topic"] = f"{prefix}/{manufacturer}/{uid}/temperature_C"
     return str(json.dumps(payload))
@@ -248,9 +248,7 @@ def create_motion(manu: str, model: str, uid: str, nm: str) -> List[Tuple]:
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = (
-        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
-    )
+    topic = f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
     msgs.append((topic, payload, 2, True))
 
     # Create time:
@@ -260,9 +258,7 @@ def create_motion(manu: str, model: str, uid: str, nm: str) -> List[Tuple]:
 
     # Create event:
     payload = _create_motion_event(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = (
-        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/event/config"
-    )
+    topic = f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/event/config"
     msgs.append((topic, payload, 2, True))
     return msgs
 
@@ -277,9 +273,7 @@ def create_contact(manu: str, model: str, uid: str, nm: str) -> List[Tuple]:
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = (
-        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
-    )
+    topic = f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
     msgs.append((topic, payload, 2, True))
 
     # Create time:
@@ -289,9 +283,7 @@ def create_contact(manu: str, model: str, uid: str, nm: str) -> List[Tuple]:
 
     # Create closed:
     payload = _create_contact(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = (
-        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/door/config"
-    )
+    topic = f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/door/config"
     msgs.append((topic, payload, 2, True))
     return msgs
 
@@ -318,9 +310,7 @@ def create_contact_sensor2(manu: str, model: str, uid: str, nm: str) -> List[Tup
 
     # Create closed:
     payload = _create_contact2(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = (
-        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/door/config"
-    )
+    topic = f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/door/config"
     msgs.append((topic, payload, 2, True))
     return msgs
 
@@ -335,9 +325,7 @@ def create_glassbreak(manu: str, model: str, uid: str, nm: str):
 
     # Create tamper:
     payload = _create_tamper(manufacturer=manu, model=model, dev_name=nm, uid=uid)
-    topic = (
-        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
-    )
+    topic = f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/tamper/config"
     msgs.append((topic, payload, 2, True))
 
     # Create time:
@@ -346,19 +334,13 @@ def create_glassbreak(manu: str, model: str, uid: str, nm: str):
     msgs.append((topic, payload, 2, True))
 
     # Create event:
-    payload = _create_glassbreak_event(
-        manufacturer=manu, model=model, dev_name=nm, uid=uid
-    )
-    topic = (
-        f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/event/config"
-    )
+    payload = _create_glassbreak_event(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/binary_sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/event/config"
     msgs.append((topic, payload, 2, True))
     return msgs
 
 
-def create_temp_hum_f(
-    manu: str, model: str, channel: str, id: str, nm: str
-) -> List[Tuple]:
+def create_temp_hum_f(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
 
     uid = channel + "/" + id
     msgs = []
@@ -368,9 +350,7 @@ def create_temp_hum_f(
     msgs.append((topic, payload, 2, True))
 
     # Create temp:
-    payload = _create_temp_f(
-        manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid
-    )
+    payload = _create_temp_f(manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/temp/config"
     msgs.append((topic, payload, 2, True))
 
@@ -386,9 +366,7 @@ def create_temp_hum_f(
     return msgs
 
 
-def create_temp_hum_c(
-    manu: str, model: str, channel: str, id: str, nm: str
-) -> List[Tuple]:
+def create_temp_hum_c(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
 
     uid = channel + "/" + id
     msgs = []
@@ -414,9 +392,7 @@ def create_temp_hum_c(
     return msgs
 
 
-def create_temp_hum_f_to_c(
-    manu: str, model: str, channel: str, id: str, nm: str
-) -> List[Tuple]:
+def create_temp_hum_f_to_c(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
 
     uid = channel + "/" + id
     msgs = []
@@ -442,9 +418,7 @@ def create_temp_hum_f_to_c(
     return msgs
 
 
-def create_temp_hum_c_to_f(
-    manu: str, model: str, channel: str, id: str, nm: str
-) -> List[Tuple]:
+def create_temp_hum_c_to_f(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
 
     uid = channel + "/" + id
     msgs = []
