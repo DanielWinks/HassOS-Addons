@@ -4,13 +4,15 @@ declare password
 declare ip
 
 if bashio::config.has_value "spotify_user"; then
-  username=$(bashio::config 'spotify_user')
   if bashio::config.has_value "spotify_pw"; then
+    bashio::log.info "Setting up Spotify Config"
+
+    username=$(bashio::config 'spotify_user')
     password=$(bashio::config 'spotify_pw')
 
     ip=$(host 40817795-mopidy.local.hass.io | awk '{ print $4 }')
 
-    echo "stream = tcp://${ip}?name=mopidy_tcp&mode=client"
+    echo "stream = tcp://${ip}?name=mopidy_tcp&mode=client" >>/etc/snapserver.conf
     echo "stream = librespot:///librespot?name=Spotify &" >>/etc/snapserver.conf
     echo "dryout_ms=2000 &" >>/etc/snapserver.conf
     echo "username=${username} &" >>/etc/snapserver.conf
@@ -24,5 +26,5 @@ if bashio::config.has_value "spotify_user"; then
     echo "stream = meta:///mopidy_tcp/Spotify?name=Meta" >>/etc/snapserver.conf
   fi
 fi
-
+bashio::log.info "Starting Snapcast server"
 snapserver
