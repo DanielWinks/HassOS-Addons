@@ -59,6 +59,3 @@ COPY --from=builder /librespot/target/release/librespot /usr/local/bin/librespot
 COPY --from=builder /snapcast/server/snapserver /usr/local/bin/snapserver
 COPY --from=builder /snapcast/client/snapclient /usr/local/bin/snapclient
 COPY rootfs /
-
-RUN chmod +x /run.sh
-CMD [ "/run.sh" ]
