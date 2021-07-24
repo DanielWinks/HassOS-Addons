@@ -1,1 +1,2 @@
+#!/usr/bin/with-contenv bashio
 /usr/bin/mpd --no-daemon /etc/mpd.conf
