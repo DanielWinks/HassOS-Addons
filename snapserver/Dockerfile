@@ -18,7 +18,8 @@ RUN apt-get update && \
     libexpat1-dev \
     libatomic1 \
     timidity \
-    mpd
+    mpd \
+    libglib2.0-0
 
 COPY rootfs /
 
