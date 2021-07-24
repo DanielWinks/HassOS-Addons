@@ -18,7 +18,8 @@ RUN apt-get update && \
     libexpat1-dev \
     libatomic1 \
     timidity \
-    libchromaprint-dev
+    libchromaprint-dev \
+    libicu-dev
 
 COPY rootfs /
 
