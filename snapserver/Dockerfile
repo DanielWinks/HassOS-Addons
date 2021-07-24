@@ -132,6 +132,6 @@ RUN apt-get update && \
 COPY --from=builder /librespot/target/release/librespot /usr/local/bin/librespot
 COPY --from=builder /snapcast/server/snapserver /usr/local/bin/snapserver
 COPY --from=builder /snapcast/client/snapclient /usr/local/bin/snapclient
-COPY --from=builder /snapweb/dist/* /usr/share/snapserver/snapweb
+COPY --from=builder /snapweb/dist/* /usr/share/snapserver/snapweb/
 COPY --from=builder /mpd/output/release/mpd /usr/bin/mpd
 COPY rootfs /
