@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
@@ -8,8 +8,6 @@
   "startup": "application",
   "host_network": true,
   "boot": "auto",
-  "privileged": ["SYS_NICE"],
-  "apparmor": false,
   "map": [],
   "options": {
     "spotify_user": "",

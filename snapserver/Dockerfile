@@ -3,13 +3,16 @@ ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
 RUN \
-    apk update && \
-    apk add \
+    apk --update upgrade && \
+    apk add --no-cache \
     snapcast \
+    mpc \
     mpd \
     && \
     apk add \
-    librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
+    librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    && \
+    setcap -r /usr/bin/mpd
 
 
 COPY rootfs /
