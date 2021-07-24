@@ -12,7 +12,7 @@ if bashio::config.has_value "spotify_user"; then
 
     ip=$(host 40817795-mopidy.local.hass.io | awk '{ print $4 }')
 
-    echo "stream = pipe:///tmp/snapfifo?name=TTS" >>/etc/snapserver.conf
+    echo "stream = pipe:///tmp/tts?name=TTS" >>/etc/snapserver.conf
     echo "stream = librespot:///librespot?name=Spotify &" >>/etc/snapserver.conf
     echo "dryout_ms=2000 &" >>/etc/snapserver.conf
     echo "username=${username} &" >>/etc/snapserver.conf
