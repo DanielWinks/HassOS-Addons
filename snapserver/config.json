@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",

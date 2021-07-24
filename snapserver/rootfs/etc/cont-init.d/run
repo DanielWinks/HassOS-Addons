@@ -1,0 +1,3 @@
+mkfifo /tmp/snapfifo
+service dbus start
+service avahi-daemon start

@@ -12,7 +12,7 @@ if bashio::config.has_value "spotify_user"; then
 
     ip=$(host 40817795-mopidy.local.hass.io | awk '{ print $4 }')
 
-    echo "stream = tcp://${ip}?name=mopidy_tcp&mode=client" >>/etc/snapserver.conf
+    echo "stream = pipe:///tmp/snapfifo?name=TTS" >>/etc/snapserver.conf
     echo "stream = librespot:///librespot?name=Spotify &" >>/etc/snapserver.conf
     echo "dryout_ms=2000 &" >>/etc/snapserver.conf
     echo "username=${username} &" >>/etc/snapserver.conf
@@ -23,7 +23,7 @@ if bashio::config.has_value "spotify_user"; then
     echo "volume=100 &" >>/etc/snapserver.conf
     echo "nomalize=true &" >>/etc/snapserver.conf
     echo "autoplay=false" >>/etc/snapserver.conf
-    echo "stream = meta:///mopidy_tcp/Spotify?name=Meta" >>/etc/snapserver.conf
+    echo "stream = meta:///TTS/Spotify?name=Meta" >>/etc/snapserver.conf
   fi
 fi
 bashio::log.info "Starting Snapcast server"
