@@ -17,9 +17,7 @@ RUN apt-get update && \
     avahi-daemon \
     libexpat1-dev \
     libatomic1 \
-    timidity \
-    libchromaprint-dev \
-    libicu-dev
+    mpd
 
 COPY rootfs /
 
