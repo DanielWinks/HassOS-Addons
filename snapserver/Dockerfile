@@ -17,6 +17,7 @@ RUN apt-get update && \
     avahi-daemon \
     libexpat1-dev \
     libatomic1 \
+    timidity \
     mpd
 
 COPY rootfs /
