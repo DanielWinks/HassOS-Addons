@@ -77,7 +77,8 @@ RUN apt-get update && \
     libchromaprint-dev \
     libgcrypt20-dev \
     libboost-dev \
-    libboost-all-dev
+    libboost-all-dev \
+    npm
 
 
 RUN wget -qOrustup.sh https://sh.rustup.rs
@@ -91,6 +92,12 @@ RUN cargo build --release
 WORKDIR /
 RUN git clone https://github.com/badaix/snapcast.git
 WORKDIR /snapcast
+RUN make
+
+WORKDIR /
+RUN git clone https://github.com/badaix/snapweb.git
+WORKDIR /snapweb
+RUN npm install -g typescript
 RUN make
 
 RUN wget -qOmpd.tar.xz https://www.musicpd.org/download/mpd/0.22/mpd-0.22.9.tar.xz
@@ -125,5 +132,6 @@ RUN apt-get update && \
 COPY --from=builder /librespot/target/release/librespot /usr/local/bin/librespot
 COPY --from=builder /snapcast/server/snapserver /usr/local/bin/snapserver
 COPY --from=builder /snapcast/client/snapclient /usr/local/bin/snapclient
+COPY --from=builder /snapweb/dist/* /usr/share/snapserver/snapweb
 COPY --from=builder /mpd/output/release/mpd /usr/bin/mpd
 COPY rootfs /
