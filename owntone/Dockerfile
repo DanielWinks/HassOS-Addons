@@ -56,7 +56,6 @@ RUN cd /tmp && \
     cd /tmp/owntone-server && \
     autoreconf -fi && \
     ./configure \
-    --with-libwebsockets \
     --disable-spotify \
     --disable-lastfm \
     --disable-webinterface \
