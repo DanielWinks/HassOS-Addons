@@ -2,8 +2,8 @@
 mkfifo /tmp/tts
 chmod 777 /tmp/tts
 
-if ! bashio::fs.directory_exists '/config/Snapcast'; then
-  mkdir -p /config/snapcast ||
+if ! bashio::fs.directory_exists '/data/snapcast'; then
+  mkdir -p /data/snapcast ||
     bashio::exit.nok "Could not create Snapcast config folder!"
 fi
 
