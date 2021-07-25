@@ -1,20 +1,13 @@
 {
   "name": "Snapserver",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "slug": "snapserver_hassio",
   "panel_icon": "mdi:music-circle",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
-  "audio": true,
   "host_network": true,
-  "ports": {
-    "4478/tcp": 4478
-  },
-  "ports_description": {
-    "4478/tcp": "Web interface"
-  },
   "ingress": true,
   "ingress_entry": "iris/",
   "ingress_port": 8099,
@@ -34,7 +27,6 @@
         "name": "str",
         "value": "str"
       }
-    ],
-    "leave_front_door_open": "bool?"
+    ]
   }
 }
