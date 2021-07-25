@@ -1,3 +1,13 @@
 #!/usr/bin/with-contenv bashio
 mkfifo /tmp/tts
 chmod 777 /tmp/tts
+
+if ! bashio::fs.directory_exists '/config/Snapcast'; then
+  mkdir -p /config/snapcast ||
+    bashio::exit.nok "Could not create Snapcast config folder!"
+fi
+
+if ! bashio::fs.directory_exists '/media/music'; then
+  mkdir -p /media/music ||
+    bashio::exit.nok "Could not create Music folder!"
+fi
