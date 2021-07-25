@@ -1,7 +1,8 @@
 {
   "name": "Snapserver",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "slug": "snapserver_hassio",
+  "panel_icon": "mdi:music-circle",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
