@@ -4,8 +4,7 @@ FROM ${BUILD_FROM}
 
 RUN \
     apk --update upgrade && \
-    apk add --no-cache \
-    avahi \
+    apk add --upgrade --no-cache \
     snapcast \
     mpc \
     mpd \
@@ -15,7 +14,6 @@ RUN \
     && \
     setcap -r /usr/bin/mpd \
     && \
-    sed -i 's/#enable-dbus=yes/enable-dbus=no/g' /etc/avahi/avahi-daemon.conf && \
     rm -rf /var/cache/apk/*
 
 COPY rootfs /

@@ -7,7 +7,7 @@ if ! bashio::fs.directory_exists '/config/Snapcast'; then
     bashio::exit.nok "Could not create Snapcast config folder!"
 fi
 
-if ! bashio::fs.directory_exists '/media/music'; then
-  mkdir -p /media/music ||
+if ! bashio::fs.directory_exists '/media/Music'; then
+  mkdir -p /media/Music ||
     bashio::exit.nok "Could not create Music folder!"
 fi
