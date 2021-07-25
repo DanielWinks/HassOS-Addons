@@ -1,2 +1,0 @@
-#!/usr/bin/with-contenv bashio
-/usr/bin/mpd --stdout --no-daemon /etc/mpd.conf

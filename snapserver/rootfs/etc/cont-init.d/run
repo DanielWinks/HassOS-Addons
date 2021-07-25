@@ -1,20 +1,8 @@
 #!/usr/bin/with-contenv bashio
-mkfifo /tmp/tts
-chmod 777 /tmp/tts
+mkfifo /tmp/snapfifo
+chmod 777 /tmp/snapfifo
 
 if ! bashio::fs.directory_exists '/data/snapcast'; then
   mkdir -p /data/snapcast ||
     bashio::exit.nok "Could not create Snapcast config folder!"
 fi
-
-if ! bashio::fs.directory_exists '/media/Music'; then
-  mkdir -p /media/Music ||
-    bashio::exit.nok "Could not create Music folder!"
-fi
-
-if ! bashio::fs.directory_exists '/data/mpd/playlists'; then
-  mkdir -p /data/mpd/playlists ||
-    bashio::exit.nok "Could not create playlists folder!"
-fi
-
-chown -R 100:18 /data/mpd
