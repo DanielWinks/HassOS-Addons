@@ -5,6 +5,7 @@ FROM ${BUILD_FROM}
 RUN \
     apk --update upgrade && \
     apk add --no-cache \
+    avahi \
     snapcast \
     mpc \
     mpd \
@@ -12,8 +13,10 @@ RUN \
     apk add \
     librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     && \
-    setcap -r /usr/bin/mpd
-
+    setcap -r /usr/bin/mpd \
+    && \
+    sed -i 's/#enable-dbus=yes/enable-dbus=no/g' /etc/avahi/avahi-daemon.conf && \
+    rm -rf /var/cache/apk/*
 
 COPY rootfs /
 
