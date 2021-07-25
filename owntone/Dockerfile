@@ -55,7 +55,12 @@ RUN cd /tmp && \
     git clone https://github.com/owntone/owntone-server.git && \
     cd /tmp/owntone-server && \
     autoreconf -fi && \
-    ./configure --with-libwebsockets && \
+    ./configure \
+    --with-libwebsockets \
+    --disable-spotify \
+    --disable-lastfm \
+    --disable-webinterface \
+    && \
     make && \
     make install
 
