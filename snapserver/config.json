@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.3.17",
+  "version": "1.4.0",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
@@ -9,15 +9,24 @@
   "host_network": true,
   "ingress": true,
   "ingress_entry": "iris/",
+  "ingress_port": 4478,
   "auth_api": true,
   "boot": "auto",
   "map": ["config", "share:rw", "ssl"],
   "options": {
     "spotify_user": "",
-    "spotify_pw": ""
+    "spotify_pw": "",
+    "settings": []
   },
   "schema": {
     "spotify_user": "str?",
-    "spotify_pw": "str?"
+    "spotify_pw": "str?",
+    "settings": [
+      {
+        "name": "str",
+        "value": "str"
+      }
+    ],
+    "leave_front_door_open": "bool?"
   }
 }
