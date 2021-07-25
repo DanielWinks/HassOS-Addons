@@ -1,7 +1,8 @@
 {
   "name": "OwnTone",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "slug": "owntone",
+  "image": "dwinks/owntone-{arch}",
   "description": "OwnTone",
   "url": "https://github.com/DanielWinks/HassOS-Addons/owntone",
   "startup": "services",
