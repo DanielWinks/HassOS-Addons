@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
@@ -9,7 +9,7 @@
   "host_network": true,
   "ingress": true,
   "ingress_entry": "iris/",
-  "ingress_port": 4478,
+  "ingress_port": 0,
   "auth_api": true,
   "boot": "auto",
   "map": ["config", "share:rw", "ssl"],
@@ -27,6 +27,12 @@
         "value": "str"
       }
     ],
-    "leave_front_door_open": "bool?"
+    "leave_front_door_open": "bool?",
+    "ports": {
+      "80/tcp": 4478
+    },
+    "ports_description": {
+      "80/tcp": "Web interface"
+    }
   }
 }
