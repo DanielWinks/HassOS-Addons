@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
@@ -8,7 +8,7 @@
   "startup": "application",
   "host_network": true,
   "ports": {
-    "80/tcp": 4478
+    "4478/tcp": 4478
   },
   "ports_description": {
     "80/tcp": "Web interface"
