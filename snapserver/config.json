@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
@@ -11,7 +11,7 @@
     "4478/tcp": 4478
   },
   "ports_description": {
-    "80/tcp": "Web interface"
+    "4478/tcp": "Web interface"
   },
   "ingress": true,
   "ingress_entry": "iris/",
