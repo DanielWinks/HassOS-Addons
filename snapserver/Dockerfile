@@ -7,12 +7,20 @@ RUN \
     apk add --no-cache \
     avahi \
     snapcast \
+    gst-libav \
     mopidy \
+    nginx \
+    py3-pip \
     && \
     apk add \
     librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     && \
-    rm -rf /var/cache/apk/*
+    rm -rf /var/cache/apk/* \
+    && \
+    python3 -m pip install \
+    Mopidy-MPD \
+    Mopidy-Local \
+    Mopidy-Iris
 
 COPY rootfs /
 
