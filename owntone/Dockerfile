@@ -70,11 +70,11 @@ RUN \
     if [[ "${BUILD_ARCH}" = "amd64" ]]; \
     then ./configure \
     --enable-64bit \
-    --prefix=/usr; && \
+    --prefix=/usr; \
     fi && \
     if [[ "${BUILD_ARCH}" = "i386" ]]; \
     then ./configure \
-    --prefix=/usr; && \
+    --prefix=/usr; \
     fi && \
     if [[ "${BUILD_ARCH}" = "aarch64" ]]; \
     then ./configure \
@@ -82,14 +82,14 @@ RUN \
     --disable-abiflags \
     --disable-antlrdebug \
     --enable-64bit \
-    --prefix=/usr; && \
+    --prefix=/usr; \
     fi && \
     if [[ "${BUILD_ARCH}" = "armv7" ]]; \
     then ./configure \
     --build arm-unknown-linux-gnueabihf \
     --disable-abiflags \
     --disable-antlrdebug \
-    --prefix=/usr; && \
+    --prefix=/usr; \
     fi && \
     make && \
     make DESTDIR=/tmp/antlr3c-build install && \
