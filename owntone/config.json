@@ -1,6 +1,6 @@
 {
   "name": "OwnTone",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "slug": "owntone",
   "image": "dwinks/owntone-{arch}",
   "description": "OwnTone",

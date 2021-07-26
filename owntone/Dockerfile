@@ -168,6 +168,7 @@ RUN \
     libsodium \
     libunistring \
     libwebsockets \
+    nginx \
     protobuf-c \
     sqlite \
     sqlite-libs \
