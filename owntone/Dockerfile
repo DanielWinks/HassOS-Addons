@@ -43,19 +43,24 @@ RUN \
     protobuf-c-dev \
     sqlite-dev \
     taglib-dev \
-    tar && \
+    tar \
+    && \
     apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
     mxml-dev
 
 RUN \
     mkdir -p \
-    /tmp/source/owntone && \
+    /tmp/source/owntone \
+    && \
     echo \
-    "#!/bin/bash" > /tmp/source/antlr3 && \
+    "#!/bin/bash" > /tmp/source/antlr3 \
+    && \
     echo \
-    "exec java -cp /tmp/source/antlr-3.4-complete.jar org.antlr.Tool \"\$@\"" >> /tmp/source/antlr3 && \
-    chmod a+x /tmp/source/antlr3 && \
+    "exec java -cp /tmp/source/antlr-3.4-complete.jar org.antlr.Tool \"\$@\"" >> /tmp/source/antlr3 \
+    && \
+    chmod a+x /tmp/source/antlr3 \
+    && \
     curl -o \
     /tmp/source/antlr-3.4-complete.jar -L \
     http://www.antlr3.org/download/antlr-3.4-complete.jar
@@ -63,18 +68,23 @@ RUN \
 RUN \
     curl -o \
     /tmp/libantlr3c-3.4.tar.gz -L \
-    https://github.com/antlr/website-antlr3/raw/gh-pages/download/C/libantlr3c-3.4.tar.gz && \
-    tar xf /tmp/libantlr3c-3.4.tar.gz  -C /tmp && \
-    cd /tmp/libantlr3c-3.4 && \
+    https://github.com/antlr/website-antlr3/raw/gh-pages/download/C/libantlr3c-3.4.tar.gz \
+    && \
+    tar xf /tmp/libantlr3c-3.4.tar.gz  -C /tmp \
+    && \
+    cd /tmp/libantlr3c-3.4 \
+    && \
     if [[ "${BUILD_ARCH}" = "amd64" ]]; \
     then ./configure \
     --enable-64bit \
     --prefix=/usr; \
-    fi && \
+    fi \
+    && \
     if [[ "${BUILD_ARCH}" = "i386" ]]; \
     then ./configure \
     --prefix=/usr; \
-    fi && \
+    fi \
+    && \
     if [[ "${BUILD_ARCH}" = "aarch64" ]]; \
     then ./configure \
     --build arm-unknown-linux-gnueabi \
@@ -82,36 +92,44 @@ RUN \
     --disable-antlrdebug \
     --enable-64bit \
     --prefix=/usr; \
-    fi && \
+    fi \
+    && \
     if [[ "${BUILD_ARCH}" = "armv7" ]]; \
     then ./configure \
     --build arm-unknown-linux-gnueabihf \
     --disable-abiflags \
     --disable-antlrdebug \
     --prefix=/usr; \
-    fi && \
-    make && \
-    make DESTDIR=/tmp/antlr3c-build install && \
-    export LDFLAGS="-L/tmp/antlr3c-build/usr/lib" && \
+    fi \
+    && \
+    make \
+    && \
+    make DESTDIR=/tmp/antlr3c-build install \
+    && \
+    export LDFLAGS="-L/tmp/antlr3c-build/usr/lib" \
+    && \
     export CFLAGS="-I/tmp/antlr3c-build/usr/include"
 
 RUN \
     if [ -z ${DAAPD_RELEASE+x} ]; then \
     DAAPD_RELEASE=$(curl -sX GET "https://api.github.com/repos/owntone/owntone-server/releases/latest" \
     | awk '/tag_name/{print $4;exit}' FS='[""]'); \
-    fi
-
-RUN \
+    fi \
+    && \
     curl -o \
     /tmp/source/owntone.tar.gz -L \
-    "https://github.com/owntone/owntone-server/archive/${DAAPD_RELEASE}.tar.gz" && \
+    "https://github.com/owntone/owntone-server/archive/${DAAPD_RELEASE}.tar.gz" \
+    && \
     tar xf /tmp/source/owntone.tar.gz -C \
-    /tmp/source/owntone --strip-components=1 && \
+    /tmp/source/owntone --strip-components=1 \
+    && \
     export PATH="/tmp/source:$PATH"
 
 RUN \
-    cd /tmp/source/owntone && \
-    autoreconf -i -v && \
+    cd /tmp/source/owntone \
+    && \
+    autoreconf -i -v \
+    && \
     ./configure \
     --build=$CBUILD \
     --disable-chromecast \
@@ -124,8 +142,10 @@ RUN \
     --localstatedir=/var \
     --mandir=/usr/share/man \
     --prefix=/usr \
-    --sysconfdir=/etc && \
-    make && \
+    --sysconfdir=/etc \
+    && \
+    make \
+    && \
     make DESTDIR=/tmp/daapd-build install
 
 
@@ -152,24 +172,37 @@ RUN \
     libwebsockets \
     protobuf-c \
     sqlite \
-    sqlite-libs && \
+    sqlite-libs \
+    && \
     apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
     mxml
 
 
-RUN cd /etc \
-    && sed -i -e 's/\(uid.*=.*\)/uid = "root"/g' owntone.conf.orig \
-    && sed -i s#"ipv6 = yes"#"ipv6 = no"#g owntone.conf.orig \
-    && sed -i s#/srv/music#/config/owntone/music#g owntone.conf.orig \
-    && sed -i s#/usr/local/var/cache/owntone/songs3.db#/config/owntone/cache/songs3.db#g owntone.conf.orig \
-    && sed -i s#/usr/local/var/cache/owntone/cache.db#/config/owntone/cache/cache.db#g owntone.conf.orig \
-    && sed -i s#/usr/local/var/log/owntone.log#/dev/stdout#g owntone.conf.orig \
-    && sed -i "/websocket_port\ =/ s/# *//" owntone.conf.orig \
-    && sed -i "/trusted_networks\ =/ s/# *//" owntone.conf.orig \
-    && sed -i "/pipe_autostart\ =/ s/# *//" owntone.conf.orig \
-    && sed -i "/db_path\ =/ s/# *//" owntone.conf.orig \
-    && sed -i "/cache_path\ =/ s/# *//" owntone.conf.orig
+RUN \
+    cd /etc \
+    && \
+    sed -i -e 's/\(uid.*=.*\)/uid = "root"/g' owntone.conf.orig \
+    && \
+    sed -i s#"ipv6 = yes"#"ipv6 = no"#g owntone.conf.orig \
+    && \
+    sed -i s#/srv/music#/config/owntone/music#g owntone.conf.orig \
+    && \
+    sed -i s#/usr/local/var/cache/owntone/songs3.db#/config/owntone/cache/songs3.db#g owntone.conf.orig \
+    && \
+    sed -i s#/usr/local/var/cache/owntone/cache.db#/config/owntone/cache/cache.db#g owntone.conf.orig \
+    && \
+    sed -i s#/usr/local/var/log/owntone.log#/dev/stdout#g owntone.conf.orig \
+    && \
+    sed -i "/websocket_port\ =/ s/# *//" owntone.conf.orig \
+    && \
+    sed -i "/trusted_networks\ =/ s/# *//" owntone.conf.orig \
+    && \
+    sed -i "/pipe_autostart\ =/ s/# *//" owntone.conf.orig \
+    && \
+    sed -i "/db_path\ =/ s/# *//" owntone.conf.orig \
+    && \
+    sed -i "/cache_path\ =/ s/# *//" owntone.conf.orig
 
 RUN mkdir -p /var/log/nginx && ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
 
