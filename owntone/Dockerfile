@@ -1,123 +1,142 @@
 ARG BUILD_FROM
 
-FROM ${BUILD_FROM} as base
+FROM ${BUILD_FROM} as buildstage
 ARG BUILD_ARCH
 
 # Set shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-VOLUME /etc/localtime:/etc/localtime:ro
+ARG DAAPD_RELEASE
+ARG LIBSPOTIFY_VERSION=12.1.51
+ARG ARCH=x86_64
 
-ENV BUILD_DEPS \
+RUN \
+    apk add --no-cache \
+    alsa-lib-dev \
     autoconf \
     automake \
-    autotools-dev \
-    build-essential \
-    git \
-    libantlr3c-dev \
-    libasound2-dev \
-    libavahi-client-dev \
-    libavcodec-dev \
-    libavfilter-dev \
-    libavformat-dev \
-    libavutil-dev \
-    libconfuse-dev \
-    libcurl4-gnutls-dev \
+    avahi-dev \
+    bash \
+    bsd-compat-headers \
+    confuse-dev \
+    curl \
+    curl-dev \
+    ffmpeg-dev \
+    file \
+    flac-dev \
+    g++ \
+    gcc \
+    gettext-dev \
+    gnutls-dev \
+    gperf \
+    json-c-dev \
+    libcurl \
     libevent-dev \
-    libgcrypt20-dev \
-    libgnutls28-dev \
-    libjson-c-dev \
-    libmxml-dev \
+    libgcrypt-dev \
+    libogg-dev \
     libplist-dev \
-    libplist-dev \
-    libprotobuf-c-dev \
-    libpulse-dev \
+    libressl-dev \
     libsodium-dev \
-    libsqlite3-dev \
-    libswscale-dev \
     libtool \
     libunistring-dev \
     libwebsockets-dev \
-    openjdk-11-jre-headless \
-    zlib1g-dev
-
-ENV RUN_DEPS \
-    libantlr3c-3.4-0 \
-    libasound2 \
-    libavahi-client3 \
-    libavcodec58 \
-    libavfilter7 \
-    libavformat58 \
-    libavutil56 \
-    libconfuse2 \
-    libcurl3-gnutls \
-    libevent-2.1-6 \
-    libevent-pthreads-2.1-6 \
-    libgcrypt20 \
-    libgnutls30 \
-    libjson-c3 \
-    libmxml1 \
-    libplist3 \
-    libprotobuf-c1 \
-    libpulse0 \
-    libsodium23 \
-    libsqlite3-0 \
-    libswscale5 \
-    libunistring2 \
-    libwebsockets8 \
-    nginx \
-    zlib1g \
-    avahi-daemon
-
-RUN apt-get update -y \
-    && \
-    apt-get install -y --no-install-recommends \
-    curl \
-    gpg \
-    gpg-agent \
-    dirmngr \
-    apt-transport-https \
-    gawk \
-    gettext \
-    gperf \
-    && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN if [ ! "$BUILD_ARCH" = "aarch64" ] ; then \
-    curl -L https://apt.mopidy.com/mopidy.list -o /etc/apt/sources.list.d/mopidy.list \
-    && curl -L https://apt.mopidy.com/mopidy.gpg -o /tmp/mopidy.gpg \
-    && apt-key add /tmp/mopidy.gpg; \
-    fi
-
-FROM base AS builder
-ARG BUILD_ARCH
-RUN mkdir -p /usr/share/man/man1
-RUN apt-get update -y && apt-get install -y --no-install-recommends \
-    ${BUILD_DEPS} \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN curl -L -o /tmp/antlr-3.4-complete.jar http://www.antlr3.org/download/antlr-3.4-complete.jar \
-    && echo '#!/bin/bash' > /usr/local/bin/antlr3 \
-    && echo 'exec java -cp /tmp/antlr-3.4-complete.jar org.antlr.Tool "$@"' >> /usr/local/bin/antlr3 \
-    && chmod 775 /usr/local/bin/antlr3
-
-RUN cd /tmp && \
-    git clone https://github.com/owntone/owntone-server.git && \
-    cd /tmp/owntone-server && \
-    autoreconf -fi && \
-    ./configure \
-    --disable-spotify \
-    --disable-lastfm \
-    && \
+    make \
+    openjdk8-jre-base \
+    protobuf-c-dev \
+    sqlite-dev \
+    taglib-dev \
+    tar && \
+    apk add --no-cache \
+    --repository http://nl.alpinelinux.org/alpine/edge/community \
+    mxml-dev && \
+    echo "**** make antlr wrapper ****" && \
+    mkdir -p \
+    /tmp/source/owntone && \
+    echo \
+    "#!/bin/bash" > /tmp/source/antlr3 && \
+    echo \
+    "exec java -cp /tmp/source/antlr-3.4-complete.jar org.antlr.Tool \"\$@\"" >> /tmp/source/antlr3 && \
+    chmod a+x /tmp/source/antlr3 && \
+    curl -o \
+    /tmp/source/antlr-3.4-complete.jar -L \
+    http://www.antlr3.org/download/antlr-3.4-complete.jar && \
+    echo "**** compile and install antlr3c ****" && \
+    curl -o \
+    /tmp/libantlr3c-3.4.tar.gz -L \
+    https://github.com/antlr/website-antlr3/raw/gh-pages/download/C/libantlr3c-3.4.tar.gz && \
+    tar xf /tmp/libantlr3c-3.4.tar.gz  -C /tmp && \
+    cd /tmp/libantlr3c-3.4 && \
+    ./configure --enable-64bit --prefix=/usr && \
     make && \
-    make install DESTDIR=/tmp/owntone-install
+    make DESTDIR=/tmp/antlr3c-build install && \
+    export LDFLAGS="-L/tmp/antlr3c-build/usr/lib" && \
+    export CFLAGS="-I/tmp/antlr3c-build/usr/include" && \
+    echo "**** compile owntone-server ****" && \
+    if [ -z ${DAAPD_RELEASE+x} ]; then \
+    DAAPD_RELEASE=$(curl -sX GET "https://api.github.com/repos/owntone/owntone-server/releases/latest" \
+    | awk '/tag_name/{print $4;exit}' FS='[""]'); \
+    fi && \
+    curl -L https://github.com/mopidy/libspotify-archive/blob/master/libspotify-${LIBSPOTIFY_VERSION}-Linux-${ARCH}-release.tar.gz?raw=true | tar -xzf- -C /tmp/source/ && \
+    mv /tmp/source/libspotify* /tmp/source/libspotify && \
+    sed -i 's/ldconfig//' /tmp/source/libspotify/Makefile && \
+    make -C /tmp/source/libspotify prefix=/tmp/libspotify-build install && \
+    rm -rf /tmp/source/libspotify && \
+    export LIBSPOTIFY_CFLAGS="-I/tmp/libspotify-build/include" && \
+    export LIBSPOTIFY_LIBS="/tmp/libspotify-build/lib/libspotify.so" && \
+    curl -o \
+    /tmp/source/owntone.tar.gz -L \
+    "https://github.com/owntone/owntone-server/archive/${DAAPD_RELEASE}.tar.gz" && \
+    tar xf /tmp/source/owntone.tar.gz -C \
+    /tmp/source/owntone --strip-components=1 && \
+    export PATH="/tmp/source:$PATH" && \
+    cd /tmp/source/owntone && \
+    autoreconf -i -v && \
+    ./configure \
+    --build=$CBUILD \
+    --enable-chromecast \
+    --enable-itunes \
+    --enable-lastfm \
+    --enable-mpd \
+    --enable-spotify \
+    --host=$CHOST \
+    --infodir=/usr/share/info \
+    --localstatedir=/var \
+    --mandir=/usr/share/man \
+    --prefix=/usr \
+    --sysconfdir=/etc && \
+    make && \
+    make DESTDIR=/tmp/daapd-build install && \
+    mv /tmp/daapd-build/etc/owntone.conf /tmp/daapd-build/etc/owntone.conf.orig
 
-FROM base AS runner
+
+FROM ${BUILD_FROM}
+
+COPY --from=buildstage /tmp/daapd-build/ /
+COPY --from=buildstage /tmp/antlr3c-build/ /
+COPY --from=buildstage /tmp/libspotify-build/ /
+
 ARG BUILD_ARCH
-COPY --from=builder /tmp/owntone-install /
-RUN apt-get update -y && apt-get install -y --no-install-recommends \
-    ${RUN_DEPS} \
-    && rm -rf /var/lib/apt/lists/*
+RUN \
+    apk add --no-cache \
+    avahi \
+    confuse \
+    dbus \
+    ffmpeg \
+    json-c \
+    libcurl \
+    libevent \
+    libgcrypt \
+    libplist \
+    libressl \
+    libsodium \
+    libunistring \
+    libwebsockets \
+    protobuf-c \
+    sqlite \
+    sqlite-libs && \
+    apk add --no-cache \
+    --repository http://nl.alpinelinux.org/alpine/edge/community \
+    mxml
 
 
 RUN cd /usr/local/etc \
