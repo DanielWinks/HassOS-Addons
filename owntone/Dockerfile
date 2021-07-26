@@ -108,9 +108,8 @@ RUN \
     && \
     export LDFLAGS="-L/tmp/antlr3c-build/usr/lib" \
     && \
-    export CFLAGS="-I/tmp/antlr3c-build/usr/include"
-
-RUN \
+    export CFLAGS="-I/tmp/antlr3c-build/usr/include" \
+    && \
     if [ -z ${DAAPD_RELEASE+x} ]; then \
     DAAPD_RELEASE=$(curl -sX GET "https://api.github.com/repos/owntone/owntone-server/releases/latest" \
     | awk '/tag_name/{print $4;exit}' FS='[""]'); \
@@ -123,9 +122,8 @@ RUN \
     tar xf /tmp/source/owntone.tar.gz -C \
     /tmp/source/owntone --strip-components=1 \
     && \
-    export PATH="/tmp/source:$PATH"
-
-RUN \
+    export PATH="/tmp/source:$PATH" \
+    && \
     cd /tmp/source/owntone \
     && \
     autoreconf -i -v \
