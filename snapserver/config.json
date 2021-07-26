@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
@@ -9,7 +9,7 @@
   "host_network": true,
   "host_dbus": true,
   "boot": "auto",
-  "map": ["config", "share:rw", "ssl"],
+  "map": ["config:rw", "share:rw", "ssl"],
   "options": {
     "spotify_user": "",
     "spotify_pw": "",
