@@ -1,11 +1,10 @@
 {
   "name": "OwnTone",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "slug": "owntone",
   "image": "dwinks/owntone-{arch}",
   "description": "OwnTone",
   "url": "https://github.com/DanielWinks/HassOS-Addons/owntone",
-  "webui": "http://[HOST]:[PORT:3689]/",
   "stage": "experimental",
   "ingress": true,
   "ingress_port": 0,
