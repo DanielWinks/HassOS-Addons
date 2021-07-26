@@ -168,14 +168,17 @@ RUN \
     libsodium \
     libunistring \
     libwebsockets \
-    nginx \
     protobuf-c \
     sqlite \
     sqlite-libs \
     && \
     apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
-    mxml
+    mxml \
+    && \
+    apk add --no-cache \
+    --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
+    nginx
 
 
 RUN \

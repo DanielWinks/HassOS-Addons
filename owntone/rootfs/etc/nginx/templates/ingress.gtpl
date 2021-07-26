@@ -10,13 +10,13 @@ server {
         deny    all;
 
         proxy_pass http://backend;
-        sub_filter_types '*';
-        sub_filter 'href="/"'  		'href="index.html"'   r;
-        sub_filter 'href="?/(.+?)"?(\s|>)'	'href="$1"$2' 	      r;
-        sub_filter 'src="?/(.+?)"?(\s|>)'	'src="$1"$2'          r;
-        sub_filter '/(api|admin)/'		'$1/'	              r;
-        sub_filter '/admin.html'		'admin.html';
-        sub_filter '\/artwork'			'artwork';
+        subs_filter_types '*';
+        subs_filter 'href="/"'  		'href="index.html"'   r;
+        subs_filter 'href="?/(.+?)"?(\s|>)'	'href="$1"$2' 	      r;
+        subs_filter 'src="?/(.+?)"?(\s|>)'	'src="$1"$2'          r;
+        subs_filter '/(api|admin)/'		'$1/'	              r;
+        subs_filter '/admin.html'		'admin.html';
+        subs_filter '\/artwork'			'artwork';
     }
 
 }
