@@ -180,6 +180,8 @@ RUN \
 RUN \
     cd /etc \
     && \
+    mv owntone.conf owntone.conf.orig \
+    && \
     sed -i -e 's/\(uid.*=.*\)/uid = "root"/g' owntone.conf.orig \
     && \
     sed -i s#"ipv6 = yes"#"ipv6 = no"#g owntone.conf.orig \
