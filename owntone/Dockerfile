@@ -7,7 +7,6 @@ ARG BUILD_ARCH
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ARG DAAPD_RELEASE
-ARG LIBSPOTIFY_VERSION=12.1.51
 
 RUN \
     apk add --no-cache \
@@ -100,14 +99,9 @@ RUN \
     if [ -z ${DAAPD_RELEASE+x} ]; then \
     DAAPD_RELEASE=$(curl -sX GET "https://api.github.com/repos/owntone/owntone-server/releases/latest" \
     | awk '/tag_name/{print $4;exit}' FS='[""]'); \
-    fi && \
-    curl -L https://github.com/mopidy/libspotify-archive/blob/master/libspotify-${LIBSPOTIFY_VERSION}-Linux-${BUILD_ARCH}-release.tar.gz?raw=true | tar -xzf- -C /tmp/source/ && \
-    mv /tmp/source/libspotify* /tmp/source/libspotify && \
-    sed -i 's/ldconfig//' /tmp/source/libspotify/Makefile && \
-    make -C /tmp/source/libspotify prefix=/tmp/libspotify-build install && \
-    rm -rf /tmp/source/libspotify && \
-    export LIBSPOTIFY_CFLAGS="-I/tmp/libspotify-build/include" && \
-    export LIBSPOTIFY_LIBS="/tmp/libspotify-build/lib/libspotify.so" && \
+    fi
+
+RUN \
     curl -o \
     /tmp/source/owntone.tar.gz -L \
     "https://github.com/owntone/owntone-server/archive/${DAAPD_RELEASE}.tar.gz" && \
@@ -120,11 +114,11 @@ RUN \
     autoreconf -i -v && \
     ./configure \
     --build=$CBUILD \
-    --enable-chromecast \
-    --enable-itunes \
-    --enable-lastfm \
+    --disable-chromecast \
+    --disable-itunes \
+    --disable-lastfm \
     --enable-mpd \
-    --enable-spotify \
+    --disable-spotify \
     --host=$CHOST \
     --infodir=/usr/share/info \
     --localstatedir=/var \
@@ -139,7 +133,6 @@ FROM ${BUILD_FROM}
 
 COPY --from=buildstage /tmp/daapd-build/ /
 COPY --from=buildstage /tmp/antlr3c-build/ /
-COPY --from=buildstage /tmp/libspotify-build/ /
 
 ARG BUILD_ARCH
 RUN \
