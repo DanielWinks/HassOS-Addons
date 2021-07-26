@@ -2,6 +2,10 @@ ARG BUILD_FROM
 
 FROM ${BUILD_FROM} as buildstage
 ARG BUILD_ARCH
+
+# Set shell
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 ARG DAAPD_RELEASE
 ARG LIBSPOTIFY_VERSION=12.1.51
 
