@@ -1,6 +1,6 @@
 {
   "name": "OwnTone",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "slug": "owntone",
   "image": "dwinks/owntone-{arch}",
   "description": "OwnTone",
@@ -9,8 +9,6 @@
   "webui": "http://[HOST]:[PORT:3689]/",
   "stage": "experimental",
   "ingress": false,
-  "ingress_port": 0,
-  "ingress_entry": "/",
   "startup": "application",
   "arch": ["aarch64", "armv7", "amd64", "i386"],
   "boot": "auto",
