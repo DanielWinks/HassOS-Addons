@@ -8,7 +8,7 @@
   "url": "https://github.com/DanielWinks/HassOS-Addons/owntone",
   "webui": "http://[HOST]:[PORT:3689]/",
   "stage": "experimental",
-  "ingress": true,
+  "ingress": false,
   "ingress_port": 0,
   "ingress_entry": "/",
   "startup": "application",
