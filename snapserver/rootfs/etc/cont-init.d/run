@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bashio
-mkfifo /tmp/snapfifo
-chmod 777 /tmp/snapfifo
+mkfifo /share/snapfifo
+chmod 666 /share/snapfifo
 
 if ! bashio::fs.directory_exists '/data/snapcast'; then
   mkdir -p /data/snapcast ||
