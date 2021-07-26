@@ -36,7 +36,7 @@
     "3690/udp": "Control port - Airplay",
     "3691/udp": "Timing port - Airplay"
   },
-  "map": ["share:rw"],
+  "map": ["share:rw", "config:rw"],
   "options": {},
   "schema": {}
 }
