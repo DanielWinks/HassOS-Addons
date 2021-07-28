@@ -1,5 +1,7 @@
 #!/usr/bin/with-contenv bashio
-if ! bashio::fs.file_exists '/share/snapfifo'; then
+
+pipe=/share/snapfifo
+if [[ ! -p $pipe ]]; then
   mkfifo /share/snapfifo ||
     bashio::exit.nok "Could not create named pipe!"
   chmod 666 /share/snapfifo ||
