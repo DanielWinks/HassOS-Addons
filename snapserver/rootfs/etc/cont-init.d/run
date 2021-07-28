@@ -1,6 +1,10 @@
 #!/usr/bin/with-contenv bashio
-mkfifo /config/snapfifo
-chmod 666 /config/snapfifo
+if ! bashio::fs.file_exists '/share/snapfifo'; then
+  mkfifo /share/snapfifo ||
+    bashio::exit.nok "Could not create named pipe!"
+  chmod 666 /share/snapfifo ||
+    bashio::exit.nok "Could not set permissions on pipe!"
+fi
 
 if ! bashio::fs.directory_exists '/data/snapcast'; then
   mkdir -p /data/snapcast ||
