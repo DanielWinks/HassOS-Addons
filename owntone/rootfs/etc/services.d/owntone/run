@@ -1,4 +1,0 @@
-#!/usr/bin/with-contenv bashio
-
-bashio::log.info 'Starting OwnTone Server...'
-owntone -f -c /config/owntone/owntone.conf -P /var/run/owntone.pid
