@@ -5,11 +5,8 @@ FROM ${BUILD_FROM}
 RUN \
     apk --update upgrade && \
     apk add --no-cache \
-    alsa-utils \
     avahi \
     gst-libav \
-    pulseaudio-dev \
-    alsa-plugins-pulse \
     gstreamer \
     gstreamer-dev \
     gst-plugins-base \
