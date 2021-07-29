@@ -6,6 +6,7 @@ RUN \
     apk --update upgrade && \
     apk add --no-cache \
     avahi \
+    autoconf \
     automake \
     make \
     git \
