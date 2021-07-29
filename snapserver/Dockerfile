@@ -6,6 +6,15 @@ RUN \
     apk --update upgrade && \
     apk add --no-cache \
     avahi \
+    automake \
+    make \
+    git \
+    pkgconf \
+    libtool \
+    icu-dev \
+    pcre2-dev \
+    alsa-lib \
+    build-base \
     gst-libav \
     gstreamer \
     gstreamer-dev \
@@ -22,11 +31,26 @@ RUN \
     librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     && \
     rm -rf /var/cache/apk/*
-# && \
-# python3 -m pip install \
-# Mopidy-Iris \
-# Mopidy-Local \
-# Mopidy-MPD
+
+RUN \
+    cd /tmp \
+    && \
+    git clone https://github.com/MycroftAI/mimic.git \
+    && \
+    cd mimic \
+    && \
+    ./autogen.sh \
+    && \
+    ./configure --prefix="/usr/local" \
+    && \
+    make \
+    && \
+    make check \
+    && \
+    make install \
+    && \
+    cd / \
+    && rm -rf /tmp/mimic
 
 COPY rootfs /
 
