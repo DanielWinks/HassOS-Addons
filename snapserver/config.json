@@ -1,11 +1,12 @@
 {
   "name": "Snapserver",
-  "version": "1.4.14",
+  "version": "1.4.15",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant",
   "image": "dwinks/snapserver-{arch}",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
+  "audio": true,
   "host_network": true,
   "host_dbus": true,
   "boot": "auto",
