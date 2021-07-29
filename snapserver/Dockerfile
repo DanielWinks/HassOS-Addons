@@ -8,8 +8,14 @@ RUN \
     alsa-utils \
     avahi \
     gst-libav \
+    pulseaudio-dev \
+    alsa-plugins-pulse \
     gstreamer \
-    # mopidy \
+    gstreamer-dev \
+    gst-plugins-base \
+    gst-plugins-good \
+    gst-plugins-bad \
+    gst-plugins-ugly \
     nginx \
     py3-gst \
     py3-pip \
