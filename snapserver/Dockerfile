@@ -5,10 +5,11 @@ FROM ${BUILD_FROM}
 RUN \
     apk --update upgrade && \
     apk add --no-cache \
+    alsa-utils \
     avahi \
     gst-libav \
     gstreamer \
-    mopidy \
+    # mopidy \
     nginx \
     py3-gst \
     py3-pip \
@@ -17,12 +18,12 @@ RUN \
     apk add \
     librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     && \
-    rm -rf /var/cache/apk/* \
-    && \
-    python3 -m pip install \
-    Mopidy-Iris \
-    Mopidy-Local \
-    Mopidy-MPD
+    rm -rf /var/cache/apk/*
+# && \
+# python3 -m pip install \
+# Mopidy-Iris \
+# Mopidy-Local \
+# Mopidy-MPD
 
 COPY rootfs /
 
