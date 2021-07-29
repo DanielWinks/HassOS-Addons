@@ -26,6 +26,7 @@ RUN \
     py3-gst \
     py3-pip \
     snapcast \
+    m4 \
     && \
     apk add \
     librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
