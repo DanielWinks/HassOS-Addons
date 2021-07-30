@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv bashio
 
 bashio::log.info "Starting Snapcast server"
-snapserver
+exec /usr/bin/snapserver

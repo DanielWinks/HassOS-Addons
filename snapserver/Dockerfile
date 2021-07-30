@@ -1,61 +1,60 @@
 ARG BUILD_FROM
 
+# Build binaries
+FROM ${BUILD_FROM} as builder
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN apt-get update && apt-get dist-upgrade -y
+RUN apt-get install -y git build-essential wget
+
+RUN wget -qOrustup.sh https://sh.rustup.rs
+RUN sh rustup.sh -y
+ENV PATH "/root/.cargo/bin:$PATH"
+
+RUN git clone https://github.com/librespot-org/librespot.git
+WORKDIR /librespot
+RUN cargo build --release --no-default-features --features "with-dns-sd"
+
+RUN apt-get install -y libasound2-dev libpulse-dev libvorbisidec-dev libvorbis-dev libopus-dev libflac-dev libsoxr-dev alsa-utils libavahi-client-dev avahi-daemon libexpat1-dev
+
+WORKDIR /
+RUN wget -qOboost.tar.bz2 https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
+RUN mkdir /boost
+RUN tar --strip-components=1 -xf boost.tar.bz2 -C /boost
+RUN git clone https://github.com/badaix/snapcast.git
+WORKDIR /snapcast
+RUN ADD_CFLAGS="-I/boost" make
+
+# Build image
 FROM ${BUILD_FROM}
 
 RUN \
-    apk --update upgrade && \
-    apk add --no-cache \
-    alsa-lib \
-    autoconf \
-    automake \
-    avahi \
-    build-base \
-    git \
-    gst-libav \
-    gst-plugins-bad \
-    gst-plugins-base \
-    gst-plugins-good \
-    gst-plugins-ugly \
-    gstreamer \
-    gstreamer-dev \
-    gstreamer-tools \
-    icu-dev \
-    libtool \
-    m4 \
-    make \
-    nginx \
-    pcre2-dev \
-    pkgconf \
-    py3-gst \
-    py3-pip \
-    snapcast \
-    sox \
+    apt-get update \
     && \
-    apk add \
-    librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    apt-get dist-upgrade -y \
     && \
-    pip3 install flask \
+    apt-get install -y \
+    libasound2-dev \
+    libpulse-dev \
+    libvorbisidec-dev \
+    libvorbis-dev \
+    libopus-dev \
+    libflac-dev \
+    libsoxr-dev \
+    alsa-utils \
+    libavahi-client-dev \
+    avahi-daemon \
+    libexpat1-dev \
+    libatomic1 \
+    python3-pip \
     && \
-    rm -rf /var/cache/apk/* \
-    && \
-    cd /tmp \
-    && \
-    git clone https://github.com/MycroftAI/mimic.git \
-    && \
-    cd mimic \
-    && \
-    ./autogen.sh \
-    && \
-    ./configure --prefix="/usr/local" \
-    && \
-    make \
-    && \
-    make check \
-    && \
-    make install \
-    && \
-    cd / \
-    && rm -rf /tmp/mimic
+    pip3 install -r \
+    rootfs/tts/requirements.txt
+
+COPY --from=builder /librespot/target/release/librespot /usr/bin/librespot
+COPY --from=builder /snapcast/server/snapserver /usr/bin/snapserver
+COPY --from=builder /snapcast/client/snapclient /usr/bin/snapclient
 
 COPY rootfs /
 
