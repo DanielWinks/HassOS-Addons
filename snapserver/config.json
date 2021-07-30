@@ -1,23 +1,18 @@
 {
   "name": "Snapserver",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "slug": "snapserver_hassio",
-  "description": "Snapserver for Home Assistant",
+  "description": "Snapserver for Home Assistant, with Librespot and REST TTS",
   "image": "dwinks/snapserver-{arch}",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
   "host_network": true,
   "host_dbus": true,
   "boot": "auto",
-  "map": ["config:rw", "share:rw", "ssl"],
   "options": {
-    "spotify_user": "",
-    "spotify_pw": "",
     "settings": []
   },
   "schema": {
-    "spotify_user": "str?",
-    "spotify_pw": "str?",
     "settings": [
       {
         "name": "str",

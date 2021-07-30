@@ -1,11 +1,27 @@
 #!/usr/bin/with-contenv bashio
 
-pipe=/share/snapfifo
+pipe=/tmp/snapfifo
 if [[ ! -p $pipe ]]; then
-  mkfifo /share/snapfifo ||
+  mkfifo $pipe ||
     bashio::exit.nok "Could not create named pipe!"
-  chmod 666 /share/snapfifo ||
+  chmod 666 $pipe ||
     bashio::exit.nok "Could not set permissions on pipe!"
+fi
+
+pipe=/tmp/snap_librespot1
+if [[ ! -p $pipe ]]; then
+  mkfifo $pipe ||
+    bashio::exit.nok "Could not create named pipe for Librespot1!"
+  chmod 666 $pipe ||
+    bashio::exit.nok "Could not set permissions on pipe for Librespot1!"
+fi
+
+pipe=/tmp/snap_librespot2
+if [[ ! -p $pipe ]]; then
+  mkfifo $pipe ||
+    bashio::exit.nok "Could not create named pipe for Librespot2!"
+  chmod 666 $pipe ||
+    bashio::exit.nok "Could not set permissions on pipe for Librespot2!"
 fi
 
 if ! bashio::fs.directory_exists '/data/snapcast'; then

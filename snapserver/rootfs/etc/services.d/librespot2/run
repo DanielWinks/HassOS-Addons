@@ -1,0 +1,14 @@
+#!/usr/bin/with-contenv bashio
+
+bashio::log.info "Starting Librespot Server 1"
+
+exec /usr/bin/librespot \
+  --name 'Snapcast Group 2' \
+  --device-type avr \
+  --backend pipe \
+  --device /tmp/snap_librespot2 \
+  --bitrate 160 \
+  --disable-audio-cache \
+  --enable-volume-normalisation \
+  --volume-ctrl linear \
+  --initial-volume=100

@@ -5,36 +5,39 @@ FROM ${BUILD_FROM}
 RUN \
     apk --update upgrade && \
     apk add --no-cache \
-    avahi \
+    alsa-lib \
     autoconf \
     automake \
-    make \
-    git \
-    pkgconf \
-    libtool \
-    icu-dev \
-    pcre2-dev \
-    alsa-lib \
+    avahi \
     build-base \
+    git \
     gst-libav \
-    gstreamer \
-    gstreamer-dev \
+    gst-plugins-bad \
     gst-plugins-base \
     gst-plugins-good \
-    gst-plugins-bad \
     gst-plugins-ugly \
+    gstreamer \
+    gstreamer-dev \
+    gstreamer-tools \
+    icu-dev \
+    libtool \
+    m4 \
+    make \
     nginx \
+    pcre2-dev \
+    pkgconf \
     py3-gst \
     py3-pip \
     snapcast \
-    m4 \
+    sox \
     && \
     apk add \
     librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     && \
-    rm -rf /var/cache/apk/*
-
-RUN \
+    pip3 install flask \
+    && \
+    rm -rf /var/cache/apk/* \
+    && \
     cd /tmp \
     && \
     git clone https://github.com/MycroftAI/mimic.git \
