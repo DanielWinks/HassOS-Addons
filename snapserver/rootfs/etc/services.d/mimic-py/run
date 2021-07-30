@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv bashio
 
 bashio::log.info "Starting TTS REST endpoint"
-exec /mimic-py/main.py
+exec python3 /mimic-py/main.py
