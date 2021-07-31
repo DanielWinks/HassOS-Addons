@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bashio
 
-if bashio::config.true "Start Librespot?"; then
+if bashio::config.true "start_librespot"; then
   bashio::log.info "Starting Librespot Server 1"
 
   exec /usr/bin/librespot \

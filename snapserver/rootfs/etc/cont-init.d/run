@@ -24,7 +24,7 @@ if [[ ! -p $pipe ]]; then
     bashio::exit.nok "Could not set permissions on pipe for Librespot2!"
 fi
 
-if bashio::config.true "Create FIFO in /share?"; then
+if bashio::config.true "create_fifo_in_share"; then
   pipe=/share/snapfifo
   if [[ ! -p $pipe ]]; then
     mkfifo $pipe ||
