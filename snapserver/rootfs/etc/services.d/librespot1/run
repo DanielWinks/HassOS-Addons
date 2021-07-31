@@ -1,8 +1,9 @@
 #!/usr/bin/with-contenv bashio
 
-bashio::log.info "Starting Librespot Server 1"
+if bashio::config.true 'Start Librespot?'; then
+  bashio::log.info "Starting Librespot Server 1"
 
-exec /usr/bin/librespot \
+  exec /usr/bin/librespot \
   --name 'Snapcast Group 1' \
   --device-type avr \
   --backend pipe \
@@ -12,3 +13,4 @@ exec /usr/bin/librespot \
   --enable-volume-normalisation \
   --volume-ctrl linear \
   --initial-volume=100
+fi

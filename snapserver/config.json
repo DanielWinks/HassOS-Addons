@@ -1,8 +1,8 @@
 {
   "name": "Snapserver",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "slug": "snapserver_hassio",
-  "description": "Snapserver for Home Assistant, with Librespot and REST TTS",
+  "description": "Snapserver for Home Assistant, with Librespot",
   "image": "dwinks/snapserver-{arch}",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
@@ -10,14 +10,11 @@
   "host_dbus": true,
   "boot": "auto",
   "options": {
-    "settings": []
+    "Create FIFO in /share?": false,
+    "Start Librespot?": true
   },
   "schema": {
-    "settings": [
-      {
-        "name": "str",
-        "value": "str"
-      }
-    ]
+    "Create FIFO in /share?": "bool",
+    "Start Librespot?": "bool"
   }
 }
