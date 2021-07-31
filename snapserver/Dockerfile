@@ -5,8 +5,15 @@ FROM ${BUILD_FROM} as builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update && apt-get dist-upgrade -y
-RUN apt-get install -y git build-essential wget
+RUN \
+    apt-get update \
+    && \
+    apt-get dist-upgrade -y \
+    && \
+    apt-get install -y \
+    build-essential \
+    git \
+    wget
 
 RUN wget -qOrustup.sh https://sh.rustup.rs
 RUN sh rustup.sh -y
@@ -16,7 +23,19 @@ RUN git clone https://github.com/librespot-org/librespot.git
 WORKDIR /librespot
 RUN cargo build --release --no-default-features --features "with-dns-sd"
 
-RUN apt-get install -y libasound2-dev libpulse-dev libvorbisidec-dev libvorbis-dev libopus-dev libflac-dev libsoxr-dev alsa-utils libavahi-client-dev avahi-daemon libexpat1-dev
+RUN \
+    apt-get install -y \
+    alsa-utils \
+    avahi-daemon \
+    libasound2-dev \
+    libavahi-client-dev \
+    libexpat1-dev \
+    libflac-dev \
+    libopus-dev \
+    libpulse-dev \
+    libsoxr-dev \
+    libvorbis-dev \
+    libvorbisidec-dev
 
 WORKDIR /
 RUN wget -qOboost.tar.bz2 https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
@@ -35,19 +54,21 @@ RUN \
     apt-get dist-upgrade -y \
     && \
     apt-get install -y \
-    libasound2-dev \
-    libpulse-dev \
-    libvorbisidec-dev \
-    libvorbis-dev \
-    libopus-dev \
-    libflac-dev \
-    libsoxr-dev \
     alsa-utils \
-    libavahi-client-dev \
     avahi-daemon \
-    libexpat1-dev \
+    gstreamer1.0-tools \
+    libasound2-dev \
     libatomic1 \
+    libavahi-client-dev \
+    libexpat1-dev \
+    libflac-dev \
+    libopus-dev \
+    libpulse-dev \
+    libsoxr-dev \
+    libvorbis-dev \
+    libvorbisidec-dev \
     python3-pip \
+    sox \
     && \
     pip3 install -r \
     rootfs/tts/requirements.txt
