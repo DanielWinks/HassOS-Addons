@@ -17,11 +17,10 @@ RUN \
 
 RUN wget -qOrustup.sh https://sh.rustup.rs
 RUN sh rustup.sh -y
-ENV PATH "/root/.cargo/bin:$PATH"
 
 RUN git clone https://github.com/librespot-org/librespot.git
 WORKDIR /librespot
-RUN cargo build --release --no-default-features --features "with-dns-sd"
+RUN /root/.cargo/bin/cargo build --release --no-default-features --features "with-dns-sd"
 
 RUN \
     apt-get install -y \
