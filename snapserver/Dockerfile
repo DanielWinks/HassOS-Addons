@@ -14,7 +14,6 @@ RUN \
     alsa-utils \
     avahi-daemon \
     build-essential \
-    cargo \
     git \
     libasound2-dev \
     libavahi-client-dev \
@@ -27,9 +26,13 @@ RUN \
     libvorbisidec-dev \
     wget
 
+
+RUN wget -qOrustup.sh https://sh.rustup.rs
+RUN sh rustup.sh -y
+RUN source $HOME/.cargo/env
 RUN git clone https://github.com/librespot-org/librespot.git
 WORKDIR /librespot
-RUN cargo build --release --no-default-features --features "with-dns-sd"
+RUN $HOME/.cargo/bin/cargo build --release --no-default-features --features "with-dns-sd"
 
 WORKDIR /
 RUN wget -qOboost.tar.bz2 https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
