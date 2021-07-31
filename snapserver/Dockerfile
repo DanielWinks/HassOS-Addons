@@ -17,6 +17,7 @@ RUN \
     git \
     libasound2-dev \
     libavahi-client-dev \
+    libavahi-compat-libdnssd-dev \
     libexpat1-dev \
     libflac-dev \
     libopus-dev \
@@ -24,6 +25,7 @@ RUN \
     libsoxr-dev \
     libvorbis-dev \
     libvorbisidec-dev \
+    pkg-config \
     wget
 
 
