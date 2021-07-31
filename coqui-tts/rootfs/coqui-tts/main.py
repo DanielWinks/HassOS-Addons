@@ -153,17 +153,17 @@ def style_wav_uri_to_dict(style_wav: str) -> Union[str, dict]:
     return None
 
 
-def join_wav() -> int:
+def join_wav(wav: str) -> int:
     """Pads TTS message with prepended wav file."""
-    cmd = ["sox", "alertklaxon_clean.wav", "tts.wav", "output_tts.wav"]
+    cmd = ["sox", f"{wav}", "tts.wav", "output_tts.wav"]
     print("Joining wav files together using Sox")
     sox_proc = Popen(cmd, stdout=PIPE, stderr=DEVNULL)
     return sox_proc.wait()
 
 
-def play_tts(fifo: str) -> int:
+def play_tts(output_wav: str, fifo: str) -> int:
     """Creates TTS message."""
-    pipeline = f"filesrc location=/output_tts.wav ! decodebin ! audioresample ! audioconvert ! audio/x-raw,rate=48000,channels=2,format=S16LE ! wavenc ! filesink location={fifo}"
+    pipeline = f"filesrc location=/{output_wav} ! decodebin ! audioresample ! audioconvert ! audio/x-raw,rate=48000,channels=2,format=S16LE ! wavenc ! filesink location={fifo}"
     cmd = pipeline.split(" ")
     cmd.insert(0, "gst-launch-1.0")
 
@@ -210,6 +210,7 @@ def tts() -> Response:
     fifo = request_data.pop("fifo")
     speaker_idx = request_data.pop("speaker_id", "")
     style_wav = request_data.pop("style_wav", "")
+    prepend_wav = request_data.pop("prepend_wav", "")
     print(f"{text}:{speaker_idx}:{style_wav}")
 
     style_wav = style_wav_uri_to_dict(style_wav)
@@ -220,11 +221,16 @@ def tts() -> Response:
     with open("tts.wav", "wb") as outfile:
         outfile.write(out.getbuffer())
 
-    if join_wav() > 0:
-        return make_response(jsonify(error), 500)
+    if len(prepend_wav) > 0:
+        if join_wav(prepend_wav) > 0:
+            return make_response(jsonify(error), 500)
 
-    if play_tts(fifo) > 1:
-        return make_response(jsonify(error), 500)
+    if len(prepend_wav) > 0:
+        if play_tts("output_tts.wav", fifo) > 1:
+            return make_response(jsonify(error), 500)
+    else:
+        if play_tts("tts.wav", fifo) > 1:
+            return make_response(jsonify(error), 500)
 
     return make_response(jsonify(success), 200)
 

@@ -4,17 +4,23 @@ FROM ${BUILD_FROM}
 
 COPY requirements.txt /tmp/
 
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
 RUN \
     apt-get update \
     && \
     apt-get dist-upgrade -y \
     && \
-    apt-get install -y \
+    apt-get install --no-install-recommends -y \
     build-essential \
     llvm \
+    python3-dev \
     python3-pip \
     sox \
     && \
+    apt-get install -y \
+    libsndfile1-dev \
     pip3 install -r \
     /tmp/requirements.txt
 

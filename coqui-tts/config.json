@@ -4,11 +4,11 @@
   "slug": "coqui_tts_hassio",
   "description": "Coqui TTS for Home Assistant",
   "image": "dwinks/coquitts-{arch}",
-  "arch": ["armhf", "armv7", "aarch64", "amd64"],
+  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
-  "host_network": true,
-  "host_dbus": true,
   "boot": "auto",
+  "map": ["share:rw"],
+  "ports": { "5002/tcp": 5002 },
   "options": {
     "settings": []
   },
