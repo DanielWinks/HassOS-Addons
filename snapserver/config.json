@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant, with Librespot",
   "image": "dwinks/snapserver-{arch}",
@@ -10,6 +10,7 @@
   "ports": { "1704/tcp": 1704, "1705/tcp": 1705, "1780/tcp": 1780 },
   "host_dbus": true,
   "boot": "auto",
+  "map": ["share:rw"],
   "options": {
     "create_fifo_in_share": false,
     "start_librespot": true
