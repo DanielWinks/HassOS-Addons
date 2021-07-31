@@ -4,7 +4,7 @@
   "slug": "coqui_tts_hassio",
   "description": "Coqui TTS for Home Assistant",
   "image": "dwinks/coquitts-{arch}",
-  "arch": ["armv7", "aarch64", "amd64"],
+  "arch": ["amd64"],
   "startup": "application",
   "boot": "auto",
   "map": ["share:rw"],
