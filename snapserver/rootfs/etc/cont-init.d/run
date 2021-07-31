@@ -24,7 +24,7 @@ if [[ ! -p $pipe ]]; then
     bashio::exit.nok "Could not set permissions on pipe for Librespot2!"
 fi
 
-if bashio::config.true 'Create FIFO in /share?'; then
+if bashio::config.true "Create FIFO in /share?"; then
   pipe=/share/snapfifo
   if [[ ! -p $pipe ]]; then
     mkfifo $pipe ||
@@ -37,7 +37,7 @@ if bashio::config.true 'Create FIFO in /share?'; then
   echo "source = meta:///TTS/Spotify 2?name=Spotify 2 + TTS" >>/etc/snapserver.conf
 fi
 
-if ! bashio::fs.directory_exists '/data/snapcast'; then
+if ! bashio::fs.directory_exists "/data/snapcast"; then
   mkdir -p /data/snapcast ||
     bashio::exit.nok "Could not create Snapcast config folder!"
 fi

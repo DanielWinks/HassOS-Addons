@@ -1,10 +1,10 @@
 #!/usr/bin/with-contenv bashio
 
-if bashio::config.true 'Start Librespot?'; then
+if bashio::config.true "Start Librespot?"; then
   bashio::log.info "Starting Librespot Server 1"
 
   exec /usr/bin/librespot \
-  --name 'Snapcast Group 1' \
+  --name "Snapcast Group 1" \
   --device-type avr \
   --backend pipe \
   --device /tmp/snap_librespot1 \
