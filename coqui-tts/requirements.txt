@@ -42,7 +42,6 @@ matplotlib==3.3.4
 mecab-python3==1.0.3
 num2words==0.5.10
 numba==0.53.0
-numpy==1.19.5
 packaging==21.0
 pandas==1.1.5
 pillow==8.3.1

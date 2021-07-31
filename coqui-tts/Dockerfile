@@ -24,6 +24,7 @@ RUN \
     && \
     pip3 install \
     setuptools==57.4.0 \
+    numpy==1.19.5 \
     && \
     pip3 install -r \
     /tmp/requirements.txt
