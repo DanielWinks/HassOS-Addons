@@ -12,7 +12,7 @@ RUN \
     sox \
     && \
     pip3 install -r \
-    rootfs/coqui-tts/requirements.txt
+    requirements.txt
 
 COPY rootfs /
 
