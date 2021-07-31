@@ -24,10 +24,12 @@ RUN \
     && \
     pip3 install \
     setuptools==57.4.0 \
-    numpy==1.19.5 \
     && \
     pip3 install -r \
-    /tmp/requirements.txt
+    /tmp/requirements.txt \
+    && \
+    pip3 install \
+    tts==0.1.3
 
 COPY rootfs /
 
