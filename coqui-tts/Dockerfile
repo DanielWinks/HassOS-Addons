@@ -27,7 +27,11 @@ RUN \
     wheel==0.34.2 \
     && \
     pip3 install -r \
-    /tmp/requirements.txt
+    /tmp/requirements.txt \
+    && \
+    pip3 install \
+    tts==0.1.3
+
 
 COPY rootfs /
 
