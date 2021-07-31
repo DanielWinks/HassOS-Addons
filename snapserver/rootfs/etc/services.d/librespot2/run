@@ -12,5 +12,6 @@ if bashio::config.true 'Start Librespot?'; then
   --disable-audio-cache \
   --enable-volume-normalisation \
   --volume-ctrl linear \
-  --initial-volume=100
+  --initial-volume=100 \
+  >/dev/null 2>&1
 fi

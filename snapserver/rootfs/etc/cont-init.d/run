@@ -32,6 +32,9 @@ if bashio::config.true 'Create FIFO in /share?'; then
     chmod 666 $pipe ||
       bashio::exit.nok "Could not set permissions on pipe!"
   fi
+  echo "source = pipe:///share/snapfifo?name=TTS" >>/etc/snapserver.conf
+  echo "source = meta:///TTS/Spotify 1?name=Spotify 1 + TTS" >>/etc/snapserver.conf
+  echo "source = meta:///TTS/Spotify 2?name=Spotify 2 + TTS" >>/etc/snapserver.conf
 fi
 
 if ! bashio::fs.directory_exists '/data/snapcast'; then

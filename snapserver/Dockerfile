@@ -1,80 +1,17 @@
 ARG BUILD_FROM
 
-# Build binaries
-FROM ${BUILD_FROM} as builder
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-RUN \
-    apt-get update \
-    && \
-    apt-get dist-upgrade -y \
-    && \
-    apt-get install -y \
-    alsa-utils \
-    avahi-daemon \
-    build-essential \
-    git \
-    libasound2-dev \
-    libavahi-client-dev \
-    libavahi-compat-libdnssd-dev \
-    libexpat1-dev \
-    libflac-dev \
-    libopus-dev \
-    libpulse-dev \
-    libsoxr-dev \
-    libvorbis-dev \
-    libvorbisidec-dev \
-    pkg-config \
-    wget
-
-
-RUN wget -qOrustup.sh https://sh.rustup.rs
-RUN sh rustup.sh -y
-RUN source $HOME/.cargo/env
-RUN git clone https://github.com/librespot-org/librespot.git
-WORKDIR /librespot
-RUN $HOME/.cargo/bin/cargo build --release --no-default-features --features "with-dns-sd"
-
-WORKDIR /
-RUN wget -qOboost.tar.bz2 https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
-RUN mkdir /boost
-RUN tar --strip-components=1 -xf boost.tar.bz2 -C /boost
-RUN git clone https://github.com/badaix/snapcast.git
-WORKDIR /snapcast
-RUN ADD_CFLAGS="-I/boost" make
-
-# Build image
 FROM ${BUILD_FROM}
 
 RUN \
-    apt-get update \
+    apk update \
     && \
-    apt-get dist-upgrade -y \
+    apk upgrade \
     && \
-    apt-get install -y \
-    alsa-utils \
-    avahi-daemon \
-    gstreamer1.0-tools \
-    libasound2-dev \
-    libatomic1 \
-    libavahi-client-dev \
-    libexpat1-dev \
-    libflac-dev \
-    libopus-dev \
-    libpulse-dev \
-    libsoxr-dev \
-    libvorbis-dev \
-    libvorbisidec-dev \
-    python3-pip \
-    sox \
+    apk add \
+    snapcast \
     && \
-    pip3 install -r \
-    rootfs/tts/requirements.txt
-
-COPY --from=builder /librespot/target/release/librespot /usr/bin/librespot
-COPY --from=builder /snapcast/server/snapserver /usr/bin/snapserver
-COPY --from=builder /snapcast/client/snapclient /usr/bin/snapclient
+    apk add \
+    librespot --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 COPY rootfs /
 
