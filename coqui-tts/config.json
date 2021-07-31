@@ -1,10 +1,10 @@
 {
   "name": "Coqui-TTS",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "slug": "coqui_tts_hassio",
   "description": "Coqui TTS for Home Assistant",
   "image": "dwinks/coquitts-{arch}",
-  "arch": ["amd64"],
+  "arch": ["armv7", "aarch64", "amd64"],
   "startup": "application",
   "boot": "auto",
   "map": ["share:rw"],

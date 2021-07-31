@@ -1,5 +1,7 @@
 {
   "build_from": {
-    "amd64": "ghcr.io/home-assistant/amd64-base-ubuntu:18.04"
+    "aarch64": "ghcr.io/home-assistant/aarch64-base-ubuntu:18.04",
+    "amd64": "ghcr.io/home-assistant/amd64-base-ubuntu:18.04",
+    "armv7": "ghcr.io/home-assistant/armv7-base-ubuntu:18.04"
   }
 }
