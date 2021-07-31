@@ -28,6 +28,7 @@ RUN \
     && \
     pip3 install \
     numpy==1.19.5 \
+    cython-0.29.24 \
     && \
     pip3 install -r \
     /tmp/requirements.txt
