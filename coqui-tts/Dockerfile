@@ -24,6 +24,8 @@ RUN \
     && \
     pip3 install \
     setuptools==57.4.0 \
+    && \
+    pip3 install \
     numpy==1.19.5 \
     wheel==0.34.2 \
     && \
