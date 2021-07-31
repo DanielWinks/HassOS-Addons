@@ -22,6 +22,9 @@ RUN \
     apt-get install -y \
     libsndfile1-dev \
     && \
+    pip3 install \
+    setuptools==57.4.0 \
+    && \
     pip3 install -r \
     /tmp/requirements.txt
 
