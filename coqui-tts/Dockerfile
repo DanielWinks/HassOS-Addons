@@ -19,6 +19,7 @@ RUN \
     && \
     apt-get install -y \
     libsndfile1-dev \
+    gstreamer1.0-tools \
     && \
     pip3 install --upgrade pip \
     && \
