@@ -2,8 +2,6 @@ ARG BUILD_FROM
 
 FROM ${BUILD_FROM}
 
-COPY requirements.txt /tmp/
-
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
@@ -14,7 +12,7 @@ RUN \
     && \
     apt-get install --no-install-recommends -y \
     build-essential \
-    llvm \
+    llvm-10 \
     python3-dev \
     python3-pip \
     sox \
@@ -22,16 +20,19 @@ RUN \
     apt-get install -y \
     libsndfile1-dev \
     && \
-    pip3 install \
-    setuptools==57.4.0 \
-    wheel==0.34.2 \
+    pip3 install --upgrade pip \
     && \
     pip3 install \
-    numpy==1.19.5 \
-    cython-0.29.24 \
+    setuptools \
+    wheel \
     && \
-    pip3 install -r \
-    /tmp/requirements.txt
+    pip3 install \
+    numpy \
+    cython \
+    && \
+    pip3 install \
+    tts \
+    flask
 
 COPY rootfs /
 
