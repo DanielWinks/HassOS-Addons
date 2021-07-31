@@ -4,9 +4,10 @@
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant, with Librespot",
   "image": "dwinks/snapserver-{arch}",
-  "arch": ["armv7", "aarch64", "amd64"],
+  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
   "host_network": true,
+  "ports": { "1704/tcp": 1704, "1705/tcp": 1705, "1780/tcp": 1780 },
   "host_dbus": true,
   "boot": "auto",
   "options": {
