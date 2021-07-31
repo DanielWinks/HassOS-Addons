@@ -10,6 +10,8 @@ RUN \
     apt-get dist-upgrade -y \
     && \
     apt-get install -y \
+    build-essential \
+    llvm \
     python3-pip \
     sox \
     && \
