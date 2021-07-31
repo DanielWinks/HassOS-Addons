@@ -2,6 +2,8 @@ ARG BUILD_FROM
 
 FROM ${BUILD_FROM}
 
+COPY requirements.txt /tmp/
+
 RUN \
     apt-get update \
     && \
@@ -12,7 +14,7 @@ RUN \
     sox \
     && \
     pip3 install -r \
-    requirements.txt
+    /tmp/requirements.txt
 
 COPY rootfs /
 
