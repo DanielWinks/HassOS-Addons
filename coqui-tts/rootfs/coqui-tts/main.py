@@ -3,8 +3,9 @@
 import argparse
 import io
 import json
-import os
+import os, os.path
 import sys
+import hashlib
 from pathlib import Path
 from subprocess import DEVNULL, PIPE, Popen
 from typing import Union
@@ -153,9 +154,9 @@ def style_wav_uri_to_dict(style_wav: str) -> Union[str, dict]:
     return None
 
 
-def join_wav(wav: str) -> int:
+def join_wav(prepend_filename: str, filename: str, output_name: str) -> int:
     """Pads TTS message with prepended wav file."""
-    cmd = ["sox", f"{wav}", "tts.wav", "output_tts.wav"]
+    cmd = ["sox", f"{prepend_filename}", f"{filename}", f"{output_name}"]
     print("Joining wav files together using Sox")
     sox_proc = Popen(cmd, stdout=PIPE, stderr=DEVNULL)
     return sox_proc.wait()
@@ -204,32 +205,39 @@ def tts() -> Response:
     error = {"message": "NOK", "code": "FAILURE"}
     success = {"message": "OK", "code": "SUCCESS"}
     request.get_json(force=True)
-
     request_data = request.json
-    text = request_data.pop("text")
-    fifo = request_data.pop("fifo")
-    speaker_idx = request_data.pop("speaker_id", "")
-    style_wav = request_data.pop("style_wav", "")
-    prepend_wav = request_data.pop("prepend_wav", "")
+    text: str = request_data.pop("text")
+    fifo: str = request_data.pop("fifo")
+    speaker_idx: str = request_data.pop("speaker_id", "")
+    style_wav: str = request_data.pop("style_wav", "")
+    prepend_wav: str = request_data.pop("prepend_wav", "")
+    hash_text = hashlib.sha512(text.encode())
+    hash_name = hash_text.hexdigest() + ".wav"
+
     print(f"{text}:{speaker_idx}:{style_wav}")
 
     style_wav = style_wav_uri_to_dict(style_wav)
     print(" > Model input: {}".format(text))
+
     wavs = synthesizer.tts(text, speaker_idx=speaker_idx, style_wav=style_wav)
     out = io.BytesIO()
-    synthesizer.save_wav(wavs, out)
-    with open("tts.wav", "wb") as outfile:
-        outfile.write(out.getbuffer())
-
     if len(prepend_wav) > 0:
-        if join_wav(prepend_wav) > 0:
+        prepend_name = prepend_wav + text
+        hash_prepend_name = (hashlib.sha512(prepend_name.encode())).hexdigest() + ".wav"
+        if not os.path.isfile(hash_prepend_name):
+            synthesizer.save_wav(wavs, out)
+            with open(hash_name, "wb") as outfile:
+                outfile.write(out.getbuffer())
+        if join_wav(prepend_wav, hash_name, hash_prepend_name) > 0:
             return make_response(jsonify(error), 500)
-
-    if len(prepend_wav) > 0:
-        if play_tts("output_tts.wav", fifo) > 1:
+        if play_tts(hash_prepend_name, fifo) > 1:
             return make_response(jsonify(error), 500)
     else:
-        if play_tts("tts.wav", fifo) > 1:
+        if not os.path.isfile(hash_name):
+            synthesizer.save_wav(wavs, out)
+            with open(hash_name, "wb") as outfile:
+                outfile.write(out.getbuffer())
+        if play_tts(hash_name, fifo) > 1:
             return make_response(jsonify(error), 500)
 
     return make_response(jsonify(success), 200)
