@@ -14,7 +14,7 @@ RUN \
     && \
     apt-get install --no-install-recommends -y \
     build-essential \
-    llvm \
+    llvm-10 \
     python3-dev \
     python3-pip \
     sox \
