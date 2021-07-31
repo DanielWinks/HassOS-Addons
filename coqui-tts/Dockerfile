@@ -21,6 +21,7 @@ RUN \
     && \
     apt-get install -y \
     libsndfile1-dev \
+    && \
     pip3 install -r \
     /tmp/requirements.txt
 
