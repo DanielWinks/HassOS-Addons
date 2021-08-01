@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.7.6",
+  "version": "1.7.7",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant, with Librespot",
   "image": "dwinks/snapserver-{arch}",
