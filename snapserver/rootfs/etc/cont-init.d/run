@@ -50,7 +50,7 @@ if bashio::config.true "start_librespot"; then
     fi
 
     add_opts="${add_opts} --device-type ${device_type}"
-    add_opts=$(echo $add_opts | sed -f /etc/cont-init.d/url_escape.sed)
+    add_opts=$(echo $add_opts | sed -f /etc/url_escape.sed)
     stream="${pre}?name=${name}&devicename=${name}&bitrate=${bit}&params=${add_opts}&${def}"
 
     echo ${stream} >>/etc/snapserver.conf
