@@ -36,7 +36,7 @@ if bashio::config.true "start_librespot"; then
       additional_opts=""
     fi
 
-    path=$(echo ${name} | sed -f /etc/cont-init.d/url_escape.sed)
+    path=$(echo ${name} | sed -f /etc/url_escape.sed)
     mkdir /etc/services.d/${path}
 
     bashio::var.json \
