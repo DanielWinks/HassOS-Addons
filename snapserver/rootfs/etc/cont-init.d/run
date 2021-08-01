@@ -6,7 +6,7 @@ declare bit
 declare device_type
 declare add_opts
 
-pre="librespot:///usr/bin/librespot"
+pre="source = librespot:///usr/bin/librespot"
 def="volume=100&normalize=true&autoplay=true&disable_audio_cache=true&killall=false"
 
 # Create snapcast dir
