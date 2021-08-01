@@ -3,12 +3,10 @@
 # Home Assistant Add-on: Snapserver + Librespot
 # Starts Snapcast
 # ==============================================================================
-declare silence
-
-if bashio::config.true "silence_snapcast"; then
-  silence=">/dev/null 2>&1"
-  bashio::log.info "Silencing Snapcast"
-fi
-
 bashio::log.info "Starting Snapcast server"
-exec /usr/bin/snapserver ${silence}
+if bashio::config.true "silence_snapcast"; then
+  bashio::log.info "Silencing Snapcast"
+  exec /usr/bin/snapserver >/dev/null 2>&1
+else
+  exec /usr/bin/snapserver
+fi
