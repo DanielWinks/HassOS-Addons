@@ -2,12 +2,20 @@
 declare name
 declare pipe
 declare stream
+declare bit
+declare device_type
+declare add_opts
 
+pre="librespot:///usr/bin/librespot"
+def="volume=100&normalize=true&autoplay=true&disable_audio_cache=true&killall=false"
+
+# Create snapcast dir
 if ! bashio::fs.directory_exists "/data/snapcast"; then
   mkdir -p /data/snapcast ||
     bashio::exit.nok "Could not create Snapcast config folder!"
 fi
 
+# Create TTS FIFO in /share/
 if bashio::config.true "create_tts_fifo_in_share"; then
   pipe=/share/snapfifo
   if [[ ! -p $pipe ]]; then
@@ -20,20 +28,31 @@ if bashio::config.true "create_tts_fifo_in_share"; then
   bashio::log.info "Created pipe at ${pipe}"
 fi
 
+# Create Librespot sources in Snapcast
 if bashio::config.true "start_librespot"; then
   for librespot in $(bashio::config 'librespot_instances|keys'); do
 
     name=$(bashio::config "librespot_instances[${librespot}].name")
-    pipe=$(bashio::config "librespot_instances[${librespot}].pipe")
-
-    if [[ ! -p $pipe ]]; then
-      mkfifo $pipe ||
-        bashio::exit.nok "Could not create named pipe for ${name}!"
-      chmod 666 $pipe ||
-        bashio::exit.nok "Could not set permissions on pipe for ${name}!"
+    if bashio::config.has_value "librespot_instances[${librespot}].bitrate"; then
+      bit=$(bashio::config "librespot_instances[${librespot}].bitrate")
+    else
+      bit="320"
+    fi
+    if bashio::config.has_value "librespot_instances[${librespot}].device_type"; then
+      device_type=$(bashio::config "librespot_instances[${librespot}].device_type")
+    else
+      device_type="speaker"
+    fi
+    if bashio::config.has_value "librespot_instances[${librespot}].additional_opts"; then
+      add_opts=$(bashio::config "librespot_instances[${librespot}].additional_opts")
+    else
+      add_opts=""
     fi
 
-    stream="source = pipe:///${pipe}?name=${name}"
+    add_opts="${add_opts} --device-type ${device_type}"
+    add_opts=$(echo $add_opts | sed -f /etc/cont-init.d/url_escape.sed)
+    stream="${pre}?name=${name}&devicename=${name}&bitrate=${bit}&params=${add_opts}&${def}"
+
     echo ${stream} >>/etc/snapserver.conf
     bashio::log.info "Snapcast Conf: ${stream}"
 
@@ -42,6 +61,5 @@ if bashio::config.true "start_librespot"; then
       echo ${stream} >>/etc/snapserver.conf
       bashio::log.info "Snapcast Conf: ${stream}"
     fi
-
   done
 fi

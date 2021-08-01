@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.7.7",
+  "version": "1.7.8",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant, with Librespot",
   "image": "dwinks/snapserver-{arch}",
@@ -15,26 +15,27 @@
     "create_tts_fifo_in_share": true,
     "create_meta_streams": true,
     "start_librespot": true,
-    "silence_librespot": true,
     "silence_snapcast": true,
     "librespot_instances": [
       {
         "name": "Librespot Group",
-        "pipe": "/tmp/librespot_group",
         "device_type": "avr",
-        "bitrate": "320"
+        "bitrate": "320",
+        "additional_opts": ""
       }
     ]
   },
   "schema": {
     "create_tts_fifo_in_share": "bool",
+    "create_meta_streams": "bool",
     "start_librespot": "bool",
+    "silence_snapcast": "bool",
     "librespot_instances": [
       {
         "name": "str",
-        "pipe": "match(^(/[^/ ]*)+/?$)",
         "device_type": "list(unknown|computer|tablet|smartphone|speaker|tv|avr|stb|audiodongle)?",
-        "bitrate": "list(96|160|320)?"
+        "bitrate": "list(96|160|320)?",
+        "additional_opts": "str?"
       }
     ]
   }
