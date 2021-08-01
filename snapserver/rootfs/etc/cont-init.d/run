@@ -7,7 +7,7 @@ declare device_type
 declare add_opts
 
 pre="source = librespot:///usr/bin/librespot"
-def="volume=100&normalize=true&autoplay=true&disable_audio_cache=true&killall=false"
+def="volume=100&normalize=true&disable_audio_cache=true&killall=false"
 
 # Create snapcast dir
 if ! bashio::fs.directory_exists "/data/snapcast"; then
