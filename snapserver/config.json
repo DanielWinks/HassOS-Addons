@@ -1,6 +1,6 @@
 {
   "name": "Snapserver",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "slug": "snapserver_hassio",
   "description": "Snapserver for Home Assistant, with Librespot",
   "image": "dwinks/snapserver-{arch}",
@@ -17,7 +17,14 @@
     "start_librespot": true,
     "silence_librespot": true,
     "silence_snapcast": true,
-    "librespot_instances": []
+    "librespot_instances": [
+      {
+        "name": "Librespot Group",
+        "pipe": "/tmp/librespot_group",
+        "device_type": "avr",
+        "bitrate": "320"
+      }
+    ]
   },
   "schema": {
     "create_tts_fifo_in_share": "bool",
