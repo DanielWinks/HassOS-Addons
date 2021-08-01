@@ -1,4 +1,9 @@
 #!/usr/bin/with-contenv bashio
+declare silence
+
+if bashio::config.true "silence_snapcast"; then
+  silence=">/dev/null 2>&1"
+fi
 
 bashio::log.info "Starting Snapcast server"
-exec /usr/bin/snapserver >/dev/null 2>&1
+exec /usr/bin/snapserver ${silence}
