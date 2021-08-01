@@ -212,33 +212,26 @@ def tts() -> Response:
     style_wav: str = request_data.pop("style_wav", "")
     prepend_wav: str = request_data.pop("prepend_wav", "")
     hash_text = hashlib.sha512(text.encode())
-    hash_name = hash_text.hexdigest() + ".wav"
-
-    print(f"{text}:{speaker_idx}:{style_wav}")
+    hash_name = "/data/" + hash_text.hexdigest() + ".wav"
 
     style_wav = style_wav_uri_to_dict(style_wav)
-    print(" > Model input: {}".format(text))
 
-    wavs = synthesizer.tts(text, speaker_idx=speaker_idx, style_wav=style_wav)
-    out = io.BytesIO()
     if len(prepend_wav) > 0:
         prepend_name = prepend_wav + text
-        hash_prepend_name = (hashlib.sha512(prepend_name.encode())).hexdigest() + ".wav"
+        hash_prepend_name = "/data/" + (hashlib.sha512(prepend_name.encode())).hexdigest() + ".wav"
         if not os.path.isfile(hash_prepend_name):
-            synthesizer.save_wav(wavs, out)
-            with open(hash_name, "wb") as outfile:
-                outfile.write(out.getbuffer())
-        if join_wav(prepend_wav, hash_name, hash_prepend_name) > 0:
-            return make_response(jsonify(error), 500)
+            wavs = synthesizer.tts(text, speaker_idx=speaker_idx, style_wav=style_wav)
+            synthesizer.save_wav(wavs, hash_name)
+            if join_wav("/coqui-tts/" + prepend_wav, hash_name, hash_prepend_name) > 0:
+                return make_response(jsonify(error), 501)
         if play_tts(hash_prepend_name, fifo) > 1:
-            return make_response(jsonify(error), 500)
+            return make_response(jsonify(error), 502)
     else:
         if not os.path.isfile(hash_name):
-            synthesizer.save_wav(wavs, out)
-            with open(hash_name, "wb") as outfile:
-                outfile.write(out.getbuffer())
+            wavs = synthesizer.tts(text, speaker_idx=speaker_idx, style_wav=style_wav)
+            synthesizer.save_wav(wavs, hash_name)
         if play_tts(hash_name, fifo) > 1:
-            return make_response(jsonify(error), 500)
+            return make_response(jsonify(error), 503)
 
     return make_response(jsonify(success), 200)
 
