@@ -6,8 +6,10 @@ declare device_type
 declare bitrate
 declare additional_opts
 
+silence=""
 if bashio::config.true "silence_librespot"; then
   silence=">/dev/null 2>&1"
+  bashio::log.info "Silencing Librespot"
 fi
 
 if bashio::config.true "start_librespot"; then
