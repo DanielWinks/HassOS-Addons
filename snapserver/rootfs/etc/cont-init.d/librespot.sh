@@ -44,8 +44,8 @@ if bashio::config.true "start_librespot"; then
       pipe ${pipe} \
       device_type ${device_type} \
       bitrate ${bitrate} \
-      additional_opts ${additional_opts}
-      | tempio \
+      additional_opts ${additional_opts} |
+      tempio \
         -template /etc/librespot/template.gtpl \
         -out /etc/services.d/${path}/run
 
