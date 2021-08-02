@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Add-on: Snapserver + Librespot
+# Starts Snapcast
+# ==============================================================================
+bashio::log.info "Starting Snapcast server"
+if bashio::config.true "silence_snapcast"; then
+  bashio::log.info "Silencing Snapcast"
+  exec /usr/bin/snapserver >/dev/null 2>&1
+else
+  exec /usr/bin/snapserver
+fi
