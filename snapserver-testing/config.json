@@ -1,6 +1,6 @@
 {
   "name": "Snapserver-testing",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "slug": "snapserver_hassio_testing",
   "description": "Snapserver (TESTING) for Home Assistant, with Librespot",
   "image": "dwinks/snapserver-testing-{arch}",
