@@ -29,7 +29,7 @@ if bashio::config.true "start_librespot"; then
     if bashio::config.has_value 'additional_opts'; then
       additional_opts=$(bashio::config 'additional_opts')
     else
-      additional_opts=""
+      additional_opts=" "
     fi
     bashio::log.info "Addional Options: ${additional_opts}"
 
