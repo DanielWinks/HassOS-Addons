@@ -29,8 +29,8 @@ if bashio::config.true "start_librespot"; then
 
     if bashio::config.has_value 'additional_opts'; then
       additional_opts=$(bashio::config 'additional_opts')
+      bashio::log.info "Addional Options: ${additional_opts}"
     fi
-    bashio::log.info "Addional Options: ${additional_opts}"
 
     path=$(echo ${name} | sed -f /etc/url_escape.sed)
     mkdir /etc/services.d/${path}
