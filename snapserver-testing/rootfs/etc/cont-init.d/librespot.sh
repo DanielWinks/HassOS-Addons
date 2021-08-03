@@ -36,12 +36,12 @@ if bashio::config.true "start_librespot"; then
     path=$(echo ${name} | sed -f /etc/url_escape.sed)
     mkdir /etc/services.d/${path}
 
-    json=bashio::var.json \
+    json=$(bashio::var.json \
       name ${name} \
       pipe ${pipe} \
       device_type ${device_type} \
       bitrate ${bitrate} \
-      additional_opts ${additional_opts}
+      additional_opts ${additional_opts})
     echo ${json} |
       tempio \
         -template /etc/librespot/template.gtpl \
