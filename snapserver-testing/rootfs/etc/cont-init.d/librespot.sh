@@ -36,19 +36,21 @@ if bashio::config.true "start_librespot"; then
     mkdir /etc/services.d/${path}
 
     if bashio::config.has_value 'additional_opts'; then
-      json_values=$(bashio::var.json \
-        name ${name} \
-        pipe ${pipe} \
-        device_type ${device_type} \
-        bitrate ${bitrate} \
-        additional_opts ${additional_opts})
+      json_values="{
+        \"name\":\"${name}\",
+        \"pipe\":\"${pipe}\",
+        \"device_type\":\"${device_type}\",
+        \"bitrate\":\"${bitrate}\",
+        \"additional_opts\":\"${additional_opts}\"
+      }"
     else
-      json_values=$(bashio::var.json \
-        name ${name} \
-        pipe ${pipe} \
-        device_type ${device_type} \
-        bitrate ${bitrate} \
-        additional_opts "")
+      json_values="{
+        \"name\":\"${name}\",
+        \"pipe\":\"${pipe}\",
+        \"device_type\":\"${device_type}\",
+        \"bitrate\":\"${bitrate}\",
+        \"additional_opts\":\"\"
+      }"
     fi
 
     echo ${json_values} |
