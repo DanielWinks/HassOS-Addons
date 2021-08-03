@@ -1,10 +1,10 @@
 #!/usr/bin/with-contenv bashio
 silence=""
-name={{ .name }}
-pipe={{ .napipeme }}
-device_type={{ .device_type }}
-bitrate={{ .bitrate }}
-additional_opts={{ .additional_opts }}
+name="{{ .name }}""
+pipe="{{ .pipe }}""
+device_type="{{ .device_type }}""
+bitrate="{{ .bitrate }}""
+additional_opts="{{ .additional_opts }}""
 
 if bashio::config.true "silence_librespot"; then
   silence=">/dev/null 2>&1"
