@@ -53,11 +53,14 @@ if bashio::config.true "start_librespot"; then
       }"
     fi
 
+    bashio::log.info ${json_values}
     echo ${json_values} |
       tempio \
         -template /etc/librespot/template.gtpl \
         -out /etc/services.d/${path}/run
 
     cp /etc/librespot/finish /etc/services.d/${path}/finish
+    chmod +x /etc/services.d/${path}/run
+    chmod +x /etc/services.d/${path}/finish
   done
 fi
