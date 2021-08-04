@@ -1,9 +1,10 @@
 {
   "name": "Mopidy",
   "version": "0.0.1",
-  "slug": "mopidy",
+  "slug": "mopidy_hassio",
   "panel_icon": "mdi:music-circle",
   "description": "Mopidy is an extensible music server",
+  "image": "dwinks/mopidy-{arch}",
   "url": "https://github.com/hassio-addons/addon-mopidy",
   "ingress": true,
   "ingress_entry": "iris/",
