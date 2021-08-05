@@ -1,6 +1,6 @@
 {
   "name": "Coqui-TTS",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "slug": "coqui_tts_hassio",
   "description": "Coqui TTS for Home Assistant",
   "image": "dwinks/coquitts-{arch}",

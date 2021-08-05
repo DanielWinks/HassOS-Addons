@@ -164,7 +164,7 @@ def join_wav(prepend_filename: str, filename: str, output_name: str) -> int:
 
 def play_tts(output_wav: str, fifo: str) -> int:
     """Creates TTS message."""
-    pipeline = f"filesrc location=/{output_wav} ! decodebin ! audioresample ! audioconvert ! audio/x-raw,rate=48000,channels=2,format=S16LE ! wavenc ! filesink location={fifo}"
+    pipeline = f"filesrc location=/{output_wav} ! decodebin ! audioresample ! audioconvert ! audio/x-raw,rate=44100,channels=2,format=S16LE ! wavenc ! filesink location={fifo}"
     cmd = pipeline.split(" ")
     cmd.insert(0, "gst-launch-1.0")
 
