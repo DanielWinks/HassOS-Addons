@@ -366,6 +366,7 @@ def create_temp_f(manu: str, model: str, channel: str, id: str, nm: str) -> List
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     msgs.append((topic, payload, 2, True))
+    return msgs
 
 
 def create_temp_c(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
@@ -386,6 +387,7 @@ def create_temp_c(manu: str, model: str, channel: str, id: str, nm: str) -> List
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     msgs.append((topic, payload, 2, True))
+    return msgs
 
 
 def create_temp_f_to_c(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
@@ -406,6 +408,7 @@ def create_temp_f_to_c(manu: str, model: str, channel: str, id: str, nm: str) ->
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     msgs.append((topic, payload, 2, True))
+    return msgs
 
 
 def create_temp_c_to_f(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
@@ -426,6 +429,7 @@ def create_temp_c_to_f(manu: str, model: str, channel: str, id: str, nm: str) ->
     payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
     msgs.append((topic, payload, 2, True))
+    return msgs
 
 
 def create_temp_hum_f(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
