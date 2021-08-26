@@ -398,9 +398,7 @@ def create_temp_f_to_c(manu: str, model: str, channel: str, id: str, nm: str) ->
     msgs.append((topic, payload, 2, True))
 
     # Create temp:
-    payload = _create_temp_f_to_c(
-        manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid
-    )
+    payload = _create_temp_f_to_c(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/temp/config"
     msgs.append((topic, payload, 2, True))
 
@@ -440,7 +438,7 @@ def create_temp_hum_f(manu: str, model: str, channel: str, id: str, nm: str) -> 
     msgs.append((topic, payload, 2, True))
 
     # Create temp:
-    payload = _create_temp_f(manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid)
+    payload = _create_temp_f(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/temp/config"
     msgs.append((topic, payload, 2, True))
 

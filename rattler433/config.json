@@ -22,15 +22,17 @@
     "mqtt_port": 1883,
     "mqtt_user": "sdr",
     "mqtt_pass": "",
-    "devices": {
-      "name": "motion sensor",
-      "model": "WS4904P",
-      "manufacturer": "DSC-Security",
-      "type": "motion",
-      "uid": "1111111",
-      "id": "12345",
-      "channel": "A"
-    }
+    "devices": [
+      {
+        "name": "motion sensor",
+        "model": "WS4904P",
+        "manufacturer": "DSC-Security",
+        "type": "motion",
+        "uid": "1111111",
+        "id": "12345",
+        "channel": "A"
+      }
+    ]
   },
   "schema": {
     "mqtt_prefix": "str",
