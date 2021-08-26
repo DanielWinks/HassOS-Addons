@@ -1,6 +1,5 @@
 ## What’s changed
 
-## 🐛 Bug fixes
+## 🎉 New Feature
 
-- Fix casts to int that should have been cast to float.
-- Fix rounding issues, which, combined with above, lead to innacurate temperature reporting.
+- Add temperature only sensor, for devices such as an Acurite 986 fridge/freezer sensor.

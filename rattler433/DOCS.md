@@ -119,7 +119,7 @@ Next is `model`. This is free-form: you may enter whatever you like here.
 
 Next is `name`. This is free-form: you may enter whatever you like here. This will be the name of the device in Home Assistant, and the base name for all the device entities.
 
-Next is `type`. Again, this is NOT free-form. It must match precisely one of the following types: "motion", "contact", "glassbreak", "temp_hum_c", "temp_hum_f", "temp_hum_c_to_f", "temp_hum_f_to_c", or "sonoff_remote". "temp_hum_c" is for sensors that report in °C and you want °C output. "temp_hum_f" is similar, but for °F. "temp_hum_c_to_f" and "temp_hum_f_to_c" similarly convert outputs, from °C from the sensor to °F in Home Assistant, and °F to °C as well.
+Next is `type`. Again, this is NOT free-form. It must match precisely one of the following types: "motion", "contact", "glassbreak", "temp_c", "temp_f", "temp_hum_c", "temp_hum_f", "temp_hum_c_to_f", "temp_hum_f_to_c", or "sonoff_remote". "temp_hum_c" is for sensors that report in °C and you want °C output. "temp_hum_f" is similar, but for °F. "temp_hum_c_to_f" and "temp_hum_f_to_c" similarly convert outputs, from °C from the sensor to °F in Home Assistant, and °F to °C as well.
 
 Other devices may be added in the future, but presently, this is all that the MQTT Device Creator will handle.
 
