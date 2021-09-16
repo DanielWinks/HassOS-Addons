@@ -1,6 +1,6 @@
 ARG BUILD_FROM
 
-FROM alpine:3.13 as builder
+FROM ${BUILD_FROM} as builder
 
 RUN apk add --no-cache --update cmake build-base libusb-dev bash curl
 
