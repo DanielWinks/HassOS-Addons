@@ -199,6 +199,7 @@ def _create_humidity(dev_name, manufacturer, model, uid):
     payload["value_template"] = "{{value|int}}"
     payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_humidity"
     payload["state_topic"] = f"{prefix}/{manufacturer}/{uid}/humidity"
+    payload["state_class"] = "measurement"
     return str(json.dumps(payload))
 
 
@@ -216,6 +217,7 @@ def _create_temp_f(dev_name, manufacturer, model, uid):
     payload["value_template"] = "{{value|float|round(1)}}"
     payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_temp_f"
     payload["state_topic"] = f"{prefix}/{manufacturer}/{uid}/temperature_F"
+    payload["state_class"] = "measurement"
     return str(json.dumps(payload))
 
 
@@ -225,6 +227,7 @@ def _create_temp_c(dev_name, manufacturer, model, uid):
     payload["value_template"] = "{{value|float|round(1)}}"
     payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_temp_c"
     payload["state_topic"] = f"{prefix}/{manufacturer}/{uid}/temperature_C"
+    payload["state_class"] = "measurement"
     return str(json.dumps(payload))
 
 
@@ -234,6 +237,7 @@ def _create_temp_c_to_f(dev_name, manufacturer, model, uid):
     payload["value_template"] = "{{(value|float * 1.8 + 32)|round(1)}}"
     payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_temp_c"
     payload["state_topic"] = f"{prefix}/{manufacturer}/{uid}/temperature_C"
+    payload["state_class"] = "measurement"
     return str(json.dumps(payload))
 
 
@@ -243,6 +247,7 @@ def _create_temp_f_to_c(dev_name, manufacturer, model, uid):
     payload["value_template"] = "{{((value|float - 32) * (5/9))|round(1)}}"
     payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_temp_c"
     payload["state_topic"] = f"{prefix}/{manufacturer}/{uid}/temperature_C"
+    payload["state_class"] = "measurement"
     return str(json.dumps(payload))
 
 
