@@ -1,5 +1,5 @@
 ## What’s changed
 
-## 🐛 Bug fixes
+## 🎉 New Feature
 
-- Change builder image to properly utilize arch-specific images.
+- Add support for long-term statistics for temperature and humidity sensors.
