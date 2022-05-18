@@ -123,6 +123,5 @@ jobs:
             --${{ matrix.arch }} \
             --target /data/${{ matrix.addon }} \
             --addon
-
         env:
           CAS_API_KEY: ${{ secrets.CAS_TOKEN }}
