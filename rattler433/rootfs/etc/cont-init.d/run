@@ -46,3 +46,7 @@ echo "\"mqtt_pass\": \"${password}\"" >>/data/mqtt.json
 echo "}" >>/data/mqtt.json
 
 /usr/bin/python3 /rattler/device_creator/main.py
+
+if bashio::config.false 'enable_internal_rtl433'; then
+    rm -rf /etc/services.d/rtl_433
+fi

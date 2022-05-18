@@ -60,10 +60,4 @@ if bashio::config.true 'customize.active'; then
   fi
 fi
 
-if bashio::config.true 'enable_internal_rtl433'; then
-    rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf
-else
-  s6-svc -x /etc/services.d/rtl_433
-  rm -rf /etc/services.d/rtl_433
-  s6-svscanctl -an /etc/services.d
-fi
+rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf
