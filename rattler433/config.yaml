@@ -1,7 +1,7 @@
 name: Rattler 433
-version: 1.6.5
+version: 1.6.6
 slug: rtl_433_hassio
-apparmor: false
+apparmor: true
 description: RTL_433 for Home Assistant
 image: dwinks/rattler433-{arch}
 init: false
