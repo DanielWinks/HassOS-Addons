@@ -60,4 +60,6 @@ if bashio::config.true 'customize.active'; then
   fi
 fi
 
-rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf
+if bashio::config.true 'enable_internal_rtl433'; then
+    rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf
+fi
