@@ -63,8 +63,7 @@ fi
 if bashio::config.true 'enable_internal_rtl433'; then
     rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf
 else
-  SUPERVISED_DIR=/etc/services.d
-  s6-svc -x ${SUPERVISED_DIR}/rtl_433
-  rm -rf ${SUPERVISED_DIR}/rtl_433
-  s6-svscanctl -a ${SUPERVISED_DIR}
+  s6-svc -x /etc/services.d/rtl_433
+  rm -rf /etc/services.d/rtl_433
+  s6-svscanctl -an /etc/services.d
 fi
