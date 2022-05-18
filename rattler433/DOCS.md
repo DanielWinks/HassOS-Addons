@@ -27,6 +27,7 @@ Add-on configuration:
 mqtt_prefix: rtl_433
 ha_discovery_topic: homeassistant
 retain: true
+enable_internal_rtl433: true
 customize: # Used for adding "Flex decoders" to rtl_433
   active: false
   folder: rattler
@@ -60,6 +61,12 @@ This is the topic for publishing MQTT discovery messages. It is required, and th
 Specify whether to retain messages or not. Retained messages are useful if you have devices which report infrequently. By using retained messages, whenever you restart Home Assistant, your entities will intialize with the values from the last retained message.
 
 Can cause issues when used for devices such as the Sonoff RM433 8 button remote. Workaround decribed below. If you only use sensor devices, you can safely choose `true` here.
+
+Default value: `true`
+
+## Option: `enable_internal_rtl433`
+
+Allows for disabling running of internal rtl_433. Device creation script still runs. Allows use of external rtl_433 instance.
 
 Default value: `true`
 
