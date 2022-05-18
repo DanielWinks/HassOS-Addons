@@ -1,0 +1,59 @@
+name: Rattler 433
+version: 1.5.1
+slug: rtl_433_hassio
+description: RTL_433 for Home Assistant
+image: dwinks/rattler433-{arch}
+codenotary: notary@home-assistant.io
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+startup: application
+boot: auto
+services:
+  - mqtt:want
+map:
+  - share
+usb: true
+options:
+  mqtt_prefix: rtl_433
+  ha_discovery_topic: homeassistant
+  retain: true
+  enable_internal_rtl433: true
+  customize:
+    active: false
+    folder: rattler
+  mqtt_host: ""
+  mqtt_port: 1883
+  mqtt_user: sdr
+  mqtt_pass: ""
+  devices:
+    - name: motion sensor
+      model: WS4904P
+      manufacturer: DSC-Security
+      type: motion
+      uid: "1111111"
+      id: "12345"
+      channel: A
+schema:
+  mqtt_prefix: str
+  ha_discovery_topic: str
+  retain: bool
+  enable_internal_rtl433: bool
+  customize:
+    active: bool
+    folder: str?
+  mqtt_host: str?
+  mqtt_port: int?
+  mqtt_user: str?
+  mqtt_pass: str?
+  devices:
+    - name: str?
+      model: str?
+      manufacturer: str?
+      type: str?
+      uid: str?
+      id: str?
+      channel: str?
