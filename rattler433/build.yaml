@@ -9,4 +9,4 @@ args:
   RTL_SDR_VER: 0.6.0
 codenotary:
   base_image: notary@home-assistant.io
-  signer: notary@home-assistant.io
+  signer: daniel.winks@gmail.com
