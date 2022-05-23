@@ -50,14 +50,10 @@ output="output mqtt://${host}:${port},user=${username},pass=${password},retain=$
 echo ${output} >/rattler/output.conf
 
 if bashio::config.true 'customize.active'; then
-  customize_dir=$(bashio::config 'customize.folder')
-  if ! bashio::fs.directory_exists '/share/rattler'; then
-    mkdir -p /share/${customize_dir}/flex ||
-      bashio::exit.nok "Could not create Rattler Flex config folder!"
-  fi
-  if [ bashio::fs.directory_exists "/share/${customize_dir}/flex" ]; then
-    cat /share/${customize_dir}/flex/*.conf >>/rattler/rtl_433.conf
-  fi
+    customize_dir=$(bashio::config 'customize.folder')
+    if [ -d "/share/${customize_dir}" ]; then
+        cat /share/${customize_dir}/*.conf >> /rattler/rtl_433.conf
+    fi
 fi
 
 rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf
