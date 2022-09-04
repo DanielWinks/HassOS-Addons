@@ -1,5 +1,5 @@
 name: Rattler 433
-version: 1.6.14
+version: 1.7.0
 slug: rtl_433_hassio
 apparmor: false
 description: RTL_433 for Home Assistant

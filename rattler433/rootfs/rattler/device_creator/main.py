@@ -70,6 +70,8 @@ def create_devices() -> None:
             msgs.extend(create_temp_hum_c_to_f(manu, model, channel, id, name))
         elif device["type"] == "sonoff_remote":
             msgs.extend(create_sonoff_remote(manu, model, uid, name))
+        elif device["type"] == "soil_moisture":
+            msgs.extend(create_soil_moisture(manu, model, uid, name))
 
     mqtt_user = mqtt_json["mqtt_user"]
     mqtt_pass = mqtt_json["mqtt_pass"]
@@ -250,6 +252,16 @@ def _create_temp_f_to_c(dev_name, manufacturer, model, uid):
     payload["state_class"] = "measurement"
     return str(json.dumps(payload))
 
+def _create_moisture_percent(dev_name, manufacturer, model, uid):
+    payload = {**_create_device(manufacturer, model, dev_name, uid)}
+    payload["name"] = dev_name + " Moisture Level"
+    payload["force_update"] = "true"
+    payload["unit_of_measurement"] = "%"
+    payload["value_template"] = "{{((value|round(1)}}"
+    payload["unique_id"] = f"{_lstr(manufacturer)}_{_lstr(model)}_{_mstr(uid)}_moisture_percent"
+    payload["state_topic"] = f"{prefix}/{manufacturer}/{uid}/moisture"
+    payload["state_class"] = "measurement"
+    return str(json.dumps(payload))
 
 def create_motion(manu: str, model: str, uid: str, nm: str) -> List[Tuple]:
 
@@ -654,6 +666,27 @@ def create_sonoff_remote(manu: str, model: str, uid: str, nm: str) -> List[Tuple
     topic = disco_prefix + "/button_h/config"
     msgs.append((topic, payload, 2, True))
     return msgs
+
+def create_soil_moisture(manu: str, model: str, uid: str, nm: str) -> List[Tuple]:
+
+    msgs = []
+    # Create battery:
+    payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/battery/config"
+    msgs.append((topic, payload, 2, True))
+
+    # Create moisture:
+    payload = _create_moisture_percent(manufacturer=manu, model=model, dev_name=nm, channel=channel, uid=uid)
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/moisture/config"
+    msgs.append((topic, payload, 2, True))
+
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
+    msgs.append((topic, payload, 2, True))
+    return msgs
+
+
 
 
 if __name__ == "__main__":

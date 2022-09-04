@@ -114,6 +114,11 @@ List of devices. Format is very specific, as shown below.
   type: temp_c_hum
   channel: A
   id: "12345"
+- manufacturer: Fineoffset-WH51
+  model: WH51
+  name: Garden Moisture Sensor
+  type: soil_moisture
+  uid: "00ab12"
 ```
 
 First is the `manufacturer`. This is NOT free-form. It must precisely match what is listed in MQTT Explorer for the device. For the examples above, you can get the manufacturer from MQTT Explorer like this:
@@ -126,8 +131,8 @@ Next is `model`. This is free-form: you may enter whatever you like here.
 
 Next is `name`. This is free-form: you may enter whatever you like here. This will be the name of the device in Home Assistant, and the base name for all the device entities.
 
-Next is `type`. Again, this is NOT free-form. It must match precisely one of the following types: "motion", "contact", "glassbreak", "temp_c", "temp_f","temp_c_to_f", "temp_f_to_c", "temp_hum_c", "temp_hum_f", "temp_hum_c_to_f", "temp_hum_f_to_c", or "sonoff_remote". "temp_hum_c" is for sensors that report in °C and you want °C output. "temp_hum_f" is similar, but for °F. "temp_hum_c_to_f" and "temp_hum_f_to_c" similarly convert outputs, from °C from the sensor to °F in Home Assistant, and °F to °C as well.
+Next is `type`. Again, this is NOT free-form. It must match precisely one of the following types: "motion", "contact", "glassbreak", "temp_c", "temp_f","temp_c_to_f", "temp_f_to_c", "temp_hum_c", "temp_hum_f", "temp_hum_c_to_f", "temp_hum_f_to_c", "sonoff_remote", or "soil_moisture". "temp_hum_c" is for sensors that report in °C and you want °C output. "temp_hum_f" is similar, but for °F. "temp_hum_c_to_f" and "temp_hum_f_to_c" similarly convert outputs, from °C from the sensor to °F in Home Assistant, and °F to °C as well.
 
 Other devices may be added in the future, but presently, this is all that the MQTT Device Creator will handle.
 
-Lastly are `uid` or `channel` & `id`. These are optional, however one must be specified per device, either simply `uid` or `channel` & `id` (both together). These may be obtained from MQTT Explorer. In the above example config, the DSC branded motion sensors use just the `uid`, while the AcuRite Tower temp/humidity sensors do not have a `uid` and instead they use the `channel` & `id`. No devices will use all 3, either just `uid` or `channel` & `id`.
+Lastly are `uid` or `channel` & `id`. These are optional, however one must be specified per device, either simply `uid` or `channel` & `id` (both together). These may be obtained from MQTT Explorer. In the above example config, the DSC branded motion sensors use just the `uid`, while the AcuRite Tower temp/humidity sensors do not have a `uid` and instead they use the `channel` & `id`. No devices will use all 3, either just `uid` or `channel` & `id`. Note that some devices may also just use `id` and not a channel. In these cases, use the value from `id` on MQTT Explorer for `uid` in the configuration.
