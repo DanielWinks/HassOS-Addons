@@ -8,8 +8,7 @@ declare output
 declare prefix
 declare customize_dir
 
-if ! bashio::services.available "mqtt"; then
-  bashio::log.info "No internal MQTT service found"
+if bashio::config.has_value "mqtt_host"; then
   if bashio::config.has_value "mqtt_host"; then
     host=$(bashio::config 'mqtt_host')
   else

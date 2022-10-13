@@ -1,5 +1,6 @@
 ## What’s changed
 
-## 🎉 New Feature
+## 🐛 Bug fixes
 
-- Add Ecowitt WH51 Soil Moisture Sensor support!
+- Fix using external MQTT broker (or new EMQX add-on from Community store).
+    - Properly uses mqtt_host and other config options when set.

@@ -9,8 +9,9 @@ declare password
 declare port
 declare username
 
-if ! bashio::services.available "mqtt"; then
-  bashio::log.info "No internal MQTT service found"
+if bashio::config.has_value "mqtt_host"; then
+  bashio::log.info "Using custom MQTT host."
+  bashio::log.info "Delete config value from 'mqtt_host' to use default HA Add-On Mosquitto broker."
   if bashio::config.has_value "mqtt_host"; then
     host=$(bashio::config 'mqtt_host')
   else
