@@ -54,7 +54,7 @@ if bashio::config.true 'customize.active'; then
     mkdir -p /share/${customize_dir}/flex ||
       bashio::exit.nok "Could not create Rattler Flex config folder!"
   fi
-  if [ bashio::fs.directory_exists "/share/${customize_dir}/flex" ]; then
+  if bashio::fs.directory_exists "/share/${customize_dir}/flex"; then
     cat /share/${customize_dir}/flex/*.conf >>/rattler/rtl_433.conf
   fi
 fi
