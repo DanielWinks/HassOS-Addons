@@ -72,6 +72,8 @@ def create_devices() -> None:
             msgs.extend(create_sonoff_remote(manu, model, uid, name))
         elif device["type"] == "soil_moisture":
             msgs.extend(create_soil_moisture(manu, model, uid, name))
+        elif device["type"] == "minka_rc400":
+            msgs.extend(create_minkaaire_rc400_remote(manu, model, uid, name))
 
     mqtt_user = mqtt_json["mqtt_user"]
     mqtt_pass = mqtt_json["mqtt_pass"]
@@ -550,6 +552,43 @@ def create_temp_hum_c_to_f(manu: str, model: str, channel: str, id: str, nm: str
     payload = _create_humidity(manufacturer=manu, model=model, dev_name=nm, uid=uid)
     topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/humidity/config"
     msgs.append((topic, payload, 2, True))
+    return msgs
+
+
+def __create_remote_button_short_press_entry(subtype: str, button_id: str, disco_prefix: str, msgs: List, manu: str, model: str, uid: str, nm: str) :
+    # Create button a short press:
+    payload = _create_button(
+        nm,
+        manu,
+        model,
+        uid,
+        "button_short_press",
+        subtype,
+        button_id,
+    )
+    topic = f"{disco_prefix}/button_{button_id.lower()}/config"
+    msgs.append((topic, payload, 2, True))
+
+
+def create_minkaaire_rc400_remote(manu: str, model: str, uid: str, nm: str) -> List[Tuple]:
+
+    disco_prefix = f"{disc}/device_automation/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}"
+    msgs = []
+    # Create time:
+    payload = _create_time(manufacturer=manu, model=model, dev_name=nm, uid=uid)
+    topic = f"{disc}/sensor/{_mstr(manu)}_{_mstr(model)}_{_mstr(uid)}/time/config"
+    msgs.append((topic, payload, 2, True))
+
+    __create_remote_button_short_press_entry("Light up", "light_up", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Light down", "light_down", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Speed 1", "speed_1", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Speed 2", "speed_2", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Speed 3", "speed_3", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Speed 4", "speed_4", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Speed 5", "speed_5", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Speed 6", "speed_6", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Reverse", "reverse", disco_prefix, msgs, manu, model, uid, nm)
+    __create_remote_button_short_press_entry("Stop", "stop", disco_prefix, msgs, manu, model, uid, nm)
     return msgs
 
 
