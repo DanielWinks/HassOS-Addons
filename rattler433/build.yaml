@@ -7,6 +7,6 @@ build_from:
 args:
   RTL_433_VER: "21.12"
   RTL_SDR_VER: 0.6.0
-codenotary:
-  base_image: notary@home-assistant.io
-  signer: daniel.winks@gmail.com
+#codenotary:
+#  base_image: notary@home-assistant.io
+#  signer: daniel.winks@gmail.com

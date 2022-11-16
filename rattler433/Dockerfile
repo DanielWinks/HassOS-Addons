@@ -67,7 +67,7 @@ LABEL \
     org.opencontainers.image.vendor="Daniel's Home Assistant Add-ons" \
     org.opencontainers.image.authors="Daniel Winks <daniel.winks@gmail.com>" \
     org.opencontainers.image.licenses="Apache" \
-    org.opencontainers.image.url="https://github.com/DanielWinks/HassOS-Addons" \
+    org.opencontainers.image.url="https://github.com/tafypz/HassOS-Addons" \
     org.opencontainers.image.source="https://github.com/${BUILD_REPOSITORY}" \
     org.opencontainers.image.documentation="https://github.com/${BUILD_REPOSITORY}/blob/main/README.md" \
     org.opencontainers.image.created=${BUILD_DATE} \

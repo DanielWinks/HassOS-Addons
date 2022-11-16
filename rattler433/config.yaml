@@ -3,9 +3,9 @@ version: 1.7.1
 slug: rtl_433_hassio
 apparmor: false
 description: RTL_433 for Home Assistant
-image: dwinks/rattler433-{arch}
+image: seabass/rattler433-{arch}
 init: false
-codenotary: daniel.winks@gmail.com
+#codenotary: daniel.winks@gmail.com
 arch:
   - armhf
   - armv7
