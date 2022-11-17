@@ -72,13 +72,13 @@ Default value: `true`
 
 ### Option: `customize.active` (optional)
 
-If set to `true` additional configuration files will be read, see the next option.
+If set to `true` additional configuration file will be read, see the next option. If neither the `customize.folder` or `flex.conf` exist, they will be created. `flex.conf` will initially be a blank file.
 
 Default value: `false`
 
 ### Option: `customize.folder` (optional)
 
-The folder to read the additional configuration files (`*.conf`) from. Folder will be located in the `/share` directory. Any files located in this folder will be appended to the end of the default configuration file. This can be used for extending the default configuration, or to alter default settings. Any config option duplicated in a file found in the customize folder will override the default setting. This is useful for adding things like "Flex decoders" to rtl_433.
+The folder to read the additional configuration file `flex.conf` from. Folder will be located in the `/share` directory. Any flex configuration can be saved in the `flex.conf` configuration file. This can be used for extending the default configuration, or to alter default settings. Any config option duplicated in a file found in the customize folder will override the default setting. This is useful for adding things like "Flex decoders" to rtl_433.
 
 Default value: `rattler`
 
@@ -131,7 +131,7 @@ Next is `model`. This is free-form: you may enter whatever you like here.
 
 Next is `name`. This is free-form: you may enter whatever you like here. This will be the name of the device in Home Assistant, and the base name for all the device entities.
 
-Next is `type`. Again, this is NOT free-form. It must match precisely one of the following types: "motion", "contact", "glassbreak", "temp_c", "temp_f","temp_c_to_f", "temp_f_to_c", "temp_hum_c", "temp_hum_f", "temp_hum_c_to_f", "temp_hum_f_to_c", "sonoff_remote", or "soil_moisture". "temp_hum_c" is for sensors that report in °C and you want °C output. "temp_hum_f" is similar, but for °F. "temp_hum_c_to_f" and "temp_hum_f_to_c" similarly convert outputs, from °C from the sensor to °F in Home Assistant, and °F to °C as well.
+Next is `type`. Again, this is NOT free-form. It must match precisely one of the following types: "motion", "contact", "glassbreak", "temp_c", "temp_f","temp_c_to_f", "temp_f_to_c", "temp_hum_c", "temp_hum_f", "temp_hum_c_to_f", "temp_hum_f_to_c", "sonoff_remote", "soil_moisture", or "minka_rc400". "temp_hum_c" is for sensors that report in °C and you want °C output. "temp_hum_f" is similar, but for °F. "temp_hum_c_to_f" and "temp_hum_f_to_c" similarly convert outputs, from °C from the sensor to °F in Home Assistant, and °F to °C as well.
 
 Other devices may be added in the future, but presently, this is all that the MQTT Device Creator will handle.
 

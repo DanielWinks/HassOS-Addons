@@ -1,5 +1,5 @@
 name: Rattler 433
-version: 1.7.1
+version: 1.7.2
 slug: rtl_433_hassio
 apparmor: false
 description: RTL_433 for Home Assistant
@@ -17,7 +17,7 @@ boot: auto
 services:
   - mqtt:want
 map:
-  - share
+  - share:rw
 usb: true
 options:
   mqtt_prefix: rtl_433

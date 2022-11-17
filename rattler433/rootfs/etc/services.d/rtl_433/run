@@ -51,12 +51,14 @@ echo ${output} >/rattler/output.conf
 if bashio::config.true 'customize.active'; then
   customize_dir=$(bashio::config 'customize.folder')
   if ! bashio::fs.directory_exists '/share/rattler'; then
-    mkdir -p /share/${customize_dir}/flex ||
-      bashio::exit.nok "Could not create Rattler Flex config folder!"
+    mkdir -p /share/${customize_dir} && touch /share/${customize_dir}/flex.conf || bashio::exit.nok "Could not create Rattler Flex config folder!"
   fi
-  if [ bashio::fs.directory_exists "/share/${customize_dir}/flex" ]; then
-    cat /share/${customize_dir}/flex/*.conf >>/rattler/rtl_433.conf
+  if bashio::fs.file_exists "/share/${customize_dir}/flex.conf"; then
+    bashio::log.log "Using flex.conf for custom flex devices..."
+    rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /share/${customize_dir}/flex.conf -c /rattler/output.conf
+    else
+    rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf
   fi
+  else
+  rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf
 fi
-
-rtl_433 -c /rattler/rtl_433.conf -c /rattler/sonoff_rm433.conf -c /rattler/output.conf

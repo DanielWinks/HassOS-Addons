@@ -2,5 +2,4 @@
 
 ## 🐛 Bug fixes
 
-- Fix using external MQTT broker (or new EMQX add-on from Community store).
-    - Properly uses mqtt_host and other config options when set.
+- Fix using customize folder. Mapping was set to read only when it needs to be RW. Should be able to create neccessary folders properly.
