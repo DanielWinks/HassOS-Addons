@@ -39,6 +39,9 @@ def create_devices() -> None:
         manu = device["manufacturer"]
         model = device["model"]
         name = device["name"]
+        uid = None
+        id = None
+        channel = None
         if "uid" in device.keys():
             uid = device["uid"]
         if "id" in device.keys():
@@ -53,21 +56,21 @@ def create_devices() -> None:
         elif device["type"] == "glassbreak":
             msgs.extend(create_glassbreak(manu, model, uid, name))
         elif device["type"] == "temp_f":
-            msgs.extend(create_temp_f(manu, model, channel, id, name))
+            msgs.extend(create_temp_f(manu, model, channel, id, name, uid))
         elif device["type"] == "temp_c":
-            msgs.extend(create_temp_c(manu, model, channel, id, name))
+            msgs.extend(create_temp_c(manu, model, channel, id, name, uid))
         elif device["type"] == "temp_f_to_c":
-            msgs.extend(create_temp_f_to_c(manu, model, channel, id, name))
+            msgs.extend(create_temp_f_to_c(manu, model, channel, id, name, uid))
         elif device["type"] == "temp_c_to_f":
-            msgs.extend(create_temp_c_to_f(manu, model, channel, id, name))
+            msgs.extend(create_temp_c_to_f(manu, model, channel, id, name, uid))
         elif device["type"] == "temp_hum_f":
-            msgs.extend(create_temp_hum_f(manu, model, channel, id, name))
+            msgs.extend(create_temp_hum_f(manu, model, channel, id, name, uid))
         elif device["type"] == "temp_hum_c":
-            msgs.extend(create_temp_hum_c(manu, model, channel, id, name))
+            msgs.extend(create_temp_hum_c(manu, model, channel, id, name, uid))
         elif device["type"] == "temp_hum_f_to_c":
-            msgs.extend(create_temp_hum_f_to_c(manu, model, channel, id, name))
+            msgs.extend(create_temp_hum_f_to_c(manu, model, channel, id, name, uid))
         elif device["type"] == "temp_hum_c_to_f":
-            msgs.extend(create_temp_hum_c_to_f(manu, model, channel, id, name))
+            msgs.extend(create_temp_hum_c_to_f(manu, model, channel, id, name, uid))
         elif device["type"] == "sonoff_remote":
             msgs.extend(create_sonoff_remote(manu, model, uid, name))
         elif device["type"] == "soil_moisture":
@@ -367,9 +370,10 @@ def create_glassbreak(manu: str, model: str, uid: str, nm: str):
     return msgs
 
 
-def create_temp_f(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
+def create_temp_f(manu: str, model: str, channel: str, id: str, nm: str, uid: str) -> List[Tuple]:
 
-    uid = channel + "/" + id
+    if uid is None or len(uid) < 1:
+        uid = channel + "/" + id
     msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
@@ -388,9 +392,10 @@ def create_temp_f(manu: str, model: str, channel: str, id: str, nm: str) -> List
     return msgs
 
 
-def create_temp_c(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
+def create_temp_c(manu: str, model: str, channel: str, id: str, nm: str, uid: str) -> List[Tuple]:
 
-    uid = channel + "/" + id
+    if uid is None or len(uid) < 1:
+        uid = channel + "/" + id
     msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
@@ -409,9 +414,10 @@ def create_temp_c(manu: str, model: str, channel: str, id: str, nm: str) -> List
     return msgs
 
 
-def create_temp_f_to_c(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
+def create_temp_f_to_c(manu: str, model: str, channel: str, id: str, nm: str, uid: str) -> List[Tuple]:
 
-    uid = channel + "/" + id
+    if uid is None or len(uid) < 1:
+        uid = channel + "/" + id
     msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
@@ -430,9 +436,10 @@ def create_temp_f_to_c(manu: str, model: str, channel: str, id: str, nm: str) ->
     return msgs
 
 
-def create_temp_c_to_f(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
+def create_temp_c_to_f(manu: str, model: str, channel: str, id: str, nm: str, uid: str) -> List[Tuple]:
 
-    uid = channel + "/" + id
+    if uid is None or len(uid) < 1:
+        uid = channel + "/" + id
     msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
@@ -451,9 +458,10 @@ def create_temp_c_to_f(manu: str, model: str, channel: str, id: str, nm: str) ->
     return msgs
 
 
-def create_temp_hum_f(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
+def create_temp_hum_f(manu: str, model: str, channel: str, id: str, nm: str, uid: str) -> List[Tuple]:
 
-    uid = channel + "/" + id
+    if uid is None or len(uid) < 1:
+        uid = channel + "/" + id
     msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
@@ -477,9 +485,10 @@ def create_temp_hum_f(manu: str, model: str, channel: str, id: str, nm: str) -> 
     return msgs
 
 
-def create_temp_hum_c(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
+def create_temp_hum_c(manu: str, model: str, channel: str, id: str, nm: str, uid: str) -> List[Tuple]:
 
-    uid = channel + "/" + id
+    if uid is None or len(uid) < 1:
+        uid = channel + "/" + id
     msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
@@ -503,9 +512,10 @@ def create_temp_hum_c(manu: str, model: str, channel: str, id: str, nm: str) -> 
     return msgs
 
 
-def create_temp_hum_f_to_c(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
+def create_temp_hum_f_to_c(manu: str, model: str, channel: str, id: str, nm: str, uid: str) -> List[Tuple]:
 
-    uid = channel + "/" + id
+    if uid is None or len(uid) < 1:
+        uid = channel + "/" + id
     msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
@@ -529,9 +539,10 @@ def create_temp_hum_f_to_c(manu: str, model: str, channel: str, id: str, nm: str
     return msgs
 
 
-def create_temp_hum_c_to_f(manu: str, model: str, channel: str, id: str, nm: str) -> List[Tuple]:
+def create_temp_hum_c_to_f(manu: str, model: str, channel: str, id: str, nm: str, uid: str) -> List[Tuple]:
 
-    uid = channel + "/" + id
+    if uid is None or len(uid) < 1:
+        uid = channel + "/" + id
     msgs = []
     # Create battery:
     payload = _create_battery(manufacturer=manu, model=model, dev_name=nm, uid=uid)
